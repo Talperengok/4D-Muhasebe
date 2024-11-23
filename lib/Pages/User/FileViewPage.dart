@@ -1,3 +1,4 @@
+import 'package:direct_accounting/Components/FileCard.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
@@ -21,62 +22,53 @@ class FileViewPage extends StatefulWidget {
 class _FileViewPageState extends State<FileViewPage> {
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
     bool isMobile = width < 800;
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: SingleChildScrollView(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return GridView.count(
-              crossAxisCount: isMobile ? 1 : 2,
-              childAspectRatio: 2.0, // Card'ların en boy oranı
-              children: widget.documents.map((doc) => _buildFileCard(doc)).toList(),
-            );
-          },
-        ),
-      ),
-    );
-  }
+        appBar: AppBar(title: Text(widget.title)),
+        body: CustomScrollView(
+          slivers: [
+            SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: isMobile ? 1 : 2,
+                childAspectRatio: 3.5,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  final doc = widget.documents[index];
+                  return FileCard(
+                    gradient1: Color(0xFF474878),
+                    gradient2: Color(0xFF325477),
+                    buttonColor: Colors.black,
+                    iconColor: Colors.white,
+                    filePath: doc["filePath"],
+                    imagePath: widget.imagePath,
+                    showInfo: () {
+                      showInfo(doc);
+                    },
+                    downloadFile: () {
+                      downloadFile(doc);
 
-  Widget _buildFileCard(Map<String, dynamic> document) {
-    return Card(
-      elevation: 5,
-      margin: EdgeInsets.all(16),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+                    },
+                    shareFile: () {
+                      shareFile(doc);
+                    },
+                  );
+                },
+                childCount: widget.documents.length,
+              ),
+            )
+            ,
+          ]
+          ,
+        )
 
-            children: [
-            Image.asset(widget.imagePath, height: 100, fit: BoxFit.cover),
-        SizedBox(height: 10),
-        Text(
-          document['filePath'],
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        // ... Diğer bilgiler (tarih, boyut, vb.)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon: Icon(Icons.info),
-              onPressed: () => showInfo(document),
-            ),
-            IconButton(
-              icon: Icon(Icons.download),
-              onPressed: () => downloadFile(document),
-            ),
-            IconButton(
-              icon: Icon(Icons.share),
-              onPressed: () => shareFile(document),
-            ),
-          ],
-        ),
-        ],
-      ),
-    ),
     );
   }
 
@@ -99,6 +91,7 @@ class _FileViewPageState extends State<FileViewPage> {
 
   void shareFile(Map<String, dynamic> document) {
     // TODO: Download file logic before sharing
-    Share.share('TODO: Share file');
+    print("GİRDİM ABE");
+    Share.share(document["filePath"]);
   }
 }
