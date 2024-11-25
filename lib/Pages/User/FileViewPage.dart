@@ -22,7 +22,10 @@ class FileViewPage extends StatefulWidget {
 class _FileViewPageState extends State<FileViewPage> {
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
     bool isMobile = width < 800;
 
     return Scaffold(
