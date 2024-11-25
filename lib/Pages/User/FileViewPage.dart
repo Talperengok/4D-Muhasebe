@@ -29,8 +29,17 @@ class _FileViewPageState extends State<FileViewPage> {
     bool isMobile = width < 800;
 
     return Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
-        body: CustomScrollView(
+      appBar: AppBar(
+        title: Text(
+          widget.title,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF080F2B),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: CustomScrollView(
           slivers: [
             SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -43,8 +52,8 @@ class _FileViewPageState extends State<FileViewPage> {
                     (context, index) {
                   final doc = widget.documents[index];
                   return FileCard(
-                    gradient1: Color(0xFF474878),
-                    gradient2: Color(0xFF325477),
+                    gradient1: const Color(0xFF474878),
+                    gradient2: const Color(0xFF325477),
                     buttonColor: Colors.black,
                     iconColor: Colors.white,
                     filePath: doc["filePath"],
@@ -54,7 +63,6 @@ class _FileViewPageState extends State<FileViewPage> {
                     },
                     downloadFile: () {
                       downloadFile(doc);
-
                     },
                     shareFile: () {
                       shareFile(doc);
@@ -63,12 +71,11 @@ class _FileViewPageState extends State<FileViewPage> {
                 },
                 childCount: widget.documents.length,
               ),
-            )
-            ,
-          ]
-          ,
-        )
-
+            ),
+          ],
+        ),
+      ),
+      backgroundColor: const Color(0xFF908EC0),
     );
   }
 
@@ -76,10 +83,13 @@ class _FileViewPageState extends State<FileViewPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('File Info'),
-        content: Text('TODO: Display file information.'),
+        title: const Text('File Info'),
+        content: const Text('TODO: Display file information.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Close'))
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
         ],
       ),
     );
