@@ -25,21 +25,22 @@ class CompanyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero, // Sivri köşeler
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10), // Köşeler
       ),
-      margin: EdgeInsets.zero, // Kenar boşluklarını kaldır
+      margin: EdgeInsets.zero,
       child: Container(
         width: double.infinity,
         height: 180,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [gradient1, gradient2],
-            begin: Alignment.topCenter, // Gradyan dikey başlar
-            end: Alignment.bottomCenter, // Gradyan dikey biter
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
+          borderRadius: BorderRadius.circular(10), // Köşeler yuvarlatıldı
         ),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8), // İçerik için padding
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
