@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:direct_accounting/Pages/User/FileViewPage.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../Components/MainMenuButton.dart';
 
@@ -15,9 +19,15 @@ class MainMenu extends StatelessWidget {
 
   // Fonksiyonlar
   Future<void> onPersonelFilesClicked(BuildContext context) async {
+    /*FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+    );
+    print(result!.paths);
+     */
     List<Map<String, dynamic>> docs =  [
       {
-       "filePath" : "content://com.android.providers.downloads.documents/document/msf%3A1000000043",
+        "fileName" : "ahmet_kaya_personel.pdf",
+       "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566305848/ahmet_kaya_personel.pdf",
        "fileCreated" : DateTime.now().add(Duration(days: -3)),
        "fileDownloaded" : DateTime.now,
        "fileOwnerClient" : "ABK LTD.",
@@ -25,7 +35,8 @@ class MainMenu extends StatelessWidget {
       }
       ,
       {
-        "filePath" : "content://com.android.providers.downloads.documents/document/msf%3A1000000044",
+        "fileName" : "muazzez_ersoy_personel.pdf",
+        "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566335435/muazzez_ersoy_personel.pdf",
         "fileCreated" : DateTime.now().add(Duration(days: -3)),
         "fileDownloaded" : DateTime.now,
         "fileOwnerClient" : "ABK LTD.",
@@ -36,15 +47,49 @@ class MainMenu extends StatelessWidget {
       context,
       MaterialPageRoute(builder: (context) => FileViewPage(documents: docs, title: "Özlük Dosyaları", imagePath: "assets/images/personel_logo.png")),
     );
-    print("Özlük Dosyaları tıklandı");
   }
 
-  void onDeclerationsClicked() {
-    print("Beyannameler tıklandı");
+  void onDeclerationsClicked(BuildContext context) {
+    List<Map<String, dynamic>> docs =  [
+      {
+        "fileName" : "YıllıkGelirVergisiBeyannamesi.xls",
+        "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566398146/YıllıkGelirVergisiBeyannamesi.xls",
+        "fileCreated" : DateTime.now().add(Duration(days: -3)),
+        "fileDownloaded" : DateTime.now,
+        "fileOwnerClient" : "ABK LTD.",
+        "fileUploadedBy" : "Admin"
+      }
+      ,
+      {
+        "fileName" : "ZiraiKazançlaraAitBildirim.xls",
+        "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566450127/ZiraiKazançlaraAitBildirim.xls",
+        "fileCreated" : DateTime.now().add(Duration(days: -3)),
+        "fileDownloaded" : DateTime.now,
+        "fileOwnerClient" : "ABK LTD.",
+        "fileUploadedBy" : "Admin"
+      }
+    ];
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FileViewPage(documents: docs, title: "Beyannameler", imagePath: "assets/images/beyanname.png")),
+    );
   }
 
-  void onInsurancesClicked() {
-    print("Sigorta Dosyaları tıklandı");
+  void onInsurancesClicked(BuildContext context) {
+    List<Map<String, dynamic>> docs =  [
+      {
+        "fileName" : "bos_sigorta.pdf",
+        "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566649157/bos_sigorta.pdf",
+        "fileCreated" : DateTime.now().add(Duration(days: -3)),
+        "fileDownloaded" : DateTime.now,
+        "fileOwnerClient" : "ABK LTD.",
+        "fileUploadedBy" : "Admin"
+      }
+    ];
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FileViewPage(documents: docs, title: "Sigorta Dosyaları", imagePath: "assets/images/sigorta.png")),
+    );
   }
 
   @override
@@ -112,9 +157,9 @@ class MainMenu extends StatelessWidget {
                     if (button['title'] == 'Özlük Dosyaları') {
                       onPersonelFilesClicked(context);
                     } else if (button['title'] == 'Beyannameler') {
-                      onDeclerationsClicked();
+                      onDeclerationsClicked(context);
                     } else if (button['title'] == 'Sigorta Dosyaları') {
-                      onInsurancesClicked();
+                      onInsurancesClicked(context);
                     }
                   },
                   gradient1: Color(0xFF474878),
@@ -149,9 +194,9 @@ class MainMenu extends StatelessWidget {
                     if (button['title'] == 'Özlük Dosyaları') {
                       onPersonelFilesClicked(context);
                     } else if (button['title'] == 'Beyannameler') {
-                      onDeclerationsClicked();
+                      onDeclerationsClicked(context);
                     } else if (button['title'] == 'Sigorta Dosyaları') {
-                      onInsurancesClicked();
+                      onInsurancesClicked(context);
                     }
                   },
                   gradient1: Color(0xFF305476),
