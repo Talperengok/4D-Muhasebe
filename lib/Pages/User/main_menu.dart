@@ -10,11 +10,13 @@ import '../../Components/MainMenuButton.dart';
 class MainMenu extends StatelessWidget {
   final List<Map<String, dynamic>> teamInfo;
   final String currentUserId;
+  final bool isAdmin;
 
   const MainMenu({
     Key? key,
     required this.teamInfo,
     required this.currentUserId,
+    required this.isAdmin,
   }) : super(key: key);
 
   // Fonksiyonlar

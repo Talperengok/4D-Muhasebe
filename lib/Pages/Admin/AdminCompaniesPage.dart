@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../Pages/main_menu.dart'; // MainMenuPage için doğru import (galiba değil)
-import 'database_helper.dart'; // Database işlemleri için gerekli import(galiba değil)
+import '../User/main_menu.dart';
+//import 'database_helper.dart'; // Database işlemleri için gerekli import(galiba değil)
 
 class AdminCompaniesPage extends StatefulWidget {
   final String adminID;
@@ -22,10 +22,9 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
   }
 
   Future<void> getAdminData() async {
-    try {
+    /*try {
       // Admin detaylarını al
-      final adminDetails =
-      await DatabaseHelper.getAdminDetails(widget.adminID);
+      final adminDetails = await DatabaseHelper.getAdminDetails(widget.adminID);
 
       // Şirket kayıtlarını al
       final allCompanies = await DatabaseHelper.getCompanies();
@@ -44,6 +43,8 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       // Hata durumunda işlem
       print("Error fetching admin data: $e");
     }
+
+     */
   }
 
   // Şirket detaylarını göster
@@ -68,8 +69,8 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MainMenuPage(
-          isAdmin: true,
+        builder: (context) => MainMenu(
+          isAdmin: true, teamInfo: [], currentUserId: '',
         ),
       ),
     );
@@ -130,7 +131,7 @@ class CompanyCard extends StatelessWidget {
           children: [
             Text(
               companyName,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headlineLarge,
             ),
             const SizedBox(height: 8),
             Row(
