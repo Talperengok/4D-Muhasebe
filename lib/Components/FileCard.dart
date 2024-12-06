@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
 
 class FileCard extends StatelessWidget {
   final Color gradient1;
@@ -25,11 +28,14 @@ class FileCard extends StatelessWidget {
 
   // Dosya türünü dosya yoluna göre belirleyelim
   String getFileType(String p_path) {
-    if (p_path.toLowerCase().endsWith('.pdf')) {
+    File file = File(p_path);
+    String? mimeType = lookupMimeType(file.path);
+    print(mimeType);
+    if (mimeType == 'application/pdf') {
       return "PDF";
-    } else if (p_path.toLowerCase().endsWith('.xlsx')) {
+    } else if (mimeType == 'application/vnd.ms-excel' || mimeType == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
       return "EXCEL";
-    } else if (p_path.toLowerCase().endsWith('.docx')) {
+    } else if (mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
       return "WORD";
     } else {
       return "UNKNOWN"; // Türü bilinmeyen dosyalar
@@ -62,7 +68,7 @@ class FileCard extends StatelessWidget {
                 Image.asset(imagePath, width: 50, height: 50),
                 const SizedBox(
                     height: 5), // Resim ile metin arasına 5px boşluk ekliyoruz
-                Text(getFileType(filePath)),
+                Text(getFileType(filePath), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
               ],
             ),
             const SizedBox(
@@ -77,7 +83,7 @@ class FileCard extends StatelessWidget {
                   Text(
                     filePath.split('/').last,
                     textAlign: TextAlign.center, // Text ortalanacak
-                  ),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
                   const SizedBox(
                       height: 10), // Text ile butonlar arasında boşluk
                   // Butonlar
@@ -92,7 +98,7 @@ class FileCard extends StatelessWidget {
                         onPressed: () => showInfo(),
                         child: Icon(Icons.info, color: iconColor),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
@@ -100,7 +106,7 @@ class FileCard extends StatelessWidget {
                         onPressed: () => downloadFile(),
                         child: Icon(Icons.download, color: iconColor),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
