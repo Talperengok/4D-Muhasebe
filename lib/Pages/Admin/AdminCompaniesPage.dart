@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../Pages/main_menu.dart'; // MainMenuPage için doğru import
-import 'database_helper.dart'; // Database işlemleri için gerekli import
+import '../../Pages/main_menu.dart'; // MainMenuPage için doğru import (galiba değil)
+import 'database_helper.dart'; // Database işlemleri için gerekli import(galiba değil)
 
 class AdminCompaniesPage extends StatefulWidget {
   final String adminID;
