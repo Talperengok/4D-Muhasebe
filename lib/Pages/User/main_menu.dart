@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:direct_accounting/Pages/User/FileViewPage.dart';
+import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
+import 'package:direct_accounting/widget/loading_indicator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -8,7 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../Components/MainMenuButton.dart';
 
 class MainMenu extends StatelessWidget {
-  final List<Map<String, dynamic>> teamInfo;
+  final Map<String, dynamic> teamInfo;
   final String currentUserId;
   final bool isAdmin;
 
@@ -26,71 +28,86 @@ class MainMenu extends StatelessWidget {
     );
     print(result!.paths);
      */
-    List<Map<String, dynamic>> docs =  [
-      {
-        "fileName" : "ahmet_kaya_personel.pdf",
-       "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566305848/ahmet_kaya_personel.pdf",
-       "fileCreated" : DateTime.now().add(Duration(days: -3)),
-       "fileDownloaded" : DateTime.now,
-       "fileOwnerClient" : "ABK LTD.",
-       "fileUploadedBy" : "Admin"
+    List<Map<String, dynamic>> docs = [];
+    LoadingIndicator(context).showLoading();
+    List<String> fileIds = teamInfo["companyFiles"].toString() != ""
+        ? teamInfo["companyFiles"].toString().split(",")
+        : [];
+    for (String file in fileIds) {
+      Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
+      if (fileMap != null && fileMap["fileType"] == "personel") {
+        docs.add(fileMap);
       }
-      ,
-      {
-        "fileName" : "muazzez_ersoy_personel.pdf",
-        "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566335435/muazzez_ersoy_personel.pdf",
-        "fileCreated" : DateTime.now().add(Duration(days: -3)),
-        "fileDownloaded" : DateTime.now,
-        "fileOwnerClient" : "ABK LTD.",
-        "fileUploadedBy" : "Admin"
-      }
-    ];
+    }
+    Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FileViewPage(documents: docs, title: "Özlük Dosyaları", imagePath: "assets/images/personel_logo.png")),
+      MaterialPageRoute(builder: (context) =>
+          FileViewPage(
+            documents: docs,
+            title: "Özlük Dosyaları",
+            imagePath: "assets/images/personel_logo.png",
+            currentUser: currentUserId,
+            companyId: teamInfo["companyID"],
+            companyAdmin: teamInfo["companyAdmin"],
+          )
+      ),
     );
   }
 
-  void onDeclerationsClicked(BuildContext context) {
-    List<Map<String, dynamic>> docs =  [
-      {
-        "fileName" : "YıllıkGelirVergisiBeyannamesi.xls",
-        "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566398146/YıllıkGelirVergisiBeyannamesi.xls",
-        "fileCreated" : DateTime.now().add(Duration(days: -3)),
-        "fileDownloaded" : DateTime.now,
-        "fileOwnerClient" : "ABK LTD.",
-        "fileUploadedBy" : "Admin"
+  Future<void> onDeclerationsClicked(BuildContext context) async {
+    List<Map<String, dynamic>> docs = [];
+    LoadingIndicator(context).showLoading();
+    List<String> fileIds = teamInfo["companyFiles"].toString() != ""
+        ? teamInfo["companyFiles"].toString().split(",")
+        : [];
+    for (String file in fileIds) {
+      Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
+      if (fileMap != null && fileMap["fileType"] == "decleration") {
+        docs.add(fileMap);
       }
-      ,
-      {
-        "fileName" : "ZiraiKazançlaraAitBildirim.xls",
-        "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566450127/ZiraiKazançlaraAitBildirim.xls",
-        "fileCreated" : DateTime.now().add(Duration(days: -3)),
-        "fileDownloaded" : DateTime.now,
-        "fileOwnerClient" : "ABK LTD.",
-        "fileUploadedBy" : "Admin"
-      }
-    ];
+    }
+    Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FileViewPage(documents: docs, title: "Beyannameler", imagePath: "assets/images/beyanname.png")),
+      MaterialPageRoute(builder: (context) =>
+          FileViewPage(
+            documents: docs,
+            title: "Beyannameler",
+            imagePath: "assets/images/beyanname.png",
+            currentUser: currentUserId,
+            companyId: teamInfo["companyID"],
+            companyAdmin: teamInfo["companyAdmin"],
+          )
+      ),
     );
   }
 
-  void onInsurancesClicked(BuildContext context) {
-    List<Map<String, dynamic>> docs =  [
-      {
-        "fileName" : "bos_sigorta.pdf",
-        "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566649157/bos_sigorta.pdf",
-        "fileCreated" : DateTime.now().add(Duration(days: -3)),
-        "fileDownloaded" : DateTime.now,
-        "fileOwnerClient" : "ABK LTD.",
-        "fileUploadedBy" : "Admin"
+  Future<void> onInsurancesClicked(BuildContext context) async {
+    List<Map<String, dynamic>> docs = [];
+    LoadingIndicator(context).showLoading();
+    List<String> fileIds = teamInfo["companyFiles"].toString() != ""
+        ? teamInfo["companyFiles"].toString().split(",")
+        : [];
+    for (String file in fileIds) {
+      Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
+      if (fileMap != null && fileMap["fileType"] == "insurance") {
+        docs.add(fileMap);
       }
-    ];
+    }
+    Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FileViewPage(documents: docs, title: "Sigorta Dosyaları", imagePath: "assets/images/sigorta.png")),
+      MaterialPageRoute(builder: (context) =>
+          FileViewPage(
+            documents: docs,
+            title: "Sigorta Dosyaları",
+            imagePath: "assets/images/sigorta.png",
+            currentUser: currentUserId,
+            companyId: teamInfo["companyID"],
+            companyAdmin: teamInfo["companyAdmin"],
+          )
+      ),
     );
   }
 
@@ -108,8 +125,10 @@ class MainMenu extends StatelessWidget {
     final bool isMobile = screenWidth < 800;
 
     // Text için veriyi alıyoruz
-    final String displayName = teamInfo.isNotEmpty ? teamInfo[0]['name'] ??
-        'Bilinmiyor' : 'Bilinmiyor';
+    final String displayName = teamInfo.isNotEmpty
+        ? teamInfo['companyName'] ??
+        'Bilinmiyor'
+        : 'Bilinmiyor';
 
     // MainMenuButton listesi
     final List<Map<String, String>> buttons = [

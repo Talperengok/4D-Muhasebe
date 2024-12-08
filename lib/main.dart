@@ -1,3 +1,5 @@
+import 'package:direct_accounting/Pages/Admin/AdminCompaniesPage.dart';
+import 'package:direct_accounting/Pages/BaseAdminPage.dart';
 import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +34,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MainMenu(teamInfo: [{"name" : "ABK LTD."}], currentUserId: "12345"),
+      //home: AdminPanelPage(),
+      home: AdminCompaniesPage(adminID: 'HaSi352299031',),
     );
   }
 }

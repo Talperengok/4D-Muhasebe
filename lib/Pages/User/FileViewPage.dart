@@ -1,4 +1,7 @@
 import 'package:direct_accounting/Components/FileCard.dart';
+import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
+import 'package:direct_accounting/widget/loading_indicator.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
@@ -8,11 +11,17 @@ class FileViewPage extends StatefulWidget {
   final List<Map<String, dynamic>> documents;
   final String title;
   final String imagePath;
+  final String currentUser;
+  final String companyId;
+  final String companyAdmin;
 
   const FileViewPage({
     required this.documents,
     required this.title,
     required this.imagePath,
+    required this.currentUser,
+    required this.companyId,
+    required this.companyAdmin,
     Key? key,
   }) : super(key: key);
 
@@ -104,6 +113,190 @@ class _FileViewPageState extends State<FileViewPage> {
         ),
       ),
       backgroundColor: const Color(0xFF908EC0),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          showUploadFileModalBottomSheet(context);
+        },
+        backgroundColor: Color(0xFF080F2B),
+        child: Icon(Icons.add, color: Colors.white,),
+      ),
+    );
+  }
+
+  Future<void> showUploadFileModalBottomSheet(BuildContext context) async {
+    File? selectedFile;
+    String fileName = '';
+    String filePassword = '';
+    final TextEditingController _nameController = TextEditingController();
+    final TextEditingController _executeController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Modal'ın tam ekran olmasını sağlar
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              Future<void> pickFile() async {
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  type: FileType.any,
+                );
+
+                if (result != null && result.files.single.path != null) {
+                  setState(() {
+                    selectedFile = File(result.files.single.path!);
+                    fileName = result.files.single.name;
+                    List<String> dots = fileName.split(".");
+                    String execute = dots.last;
+                    dots.remove(execute);
+                    _nameController.text = dots.length > 1 ? dots.join(".") : dots[0];
+                    _executeController.text = execute;
+                  });
+                }
+              }
+
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Dosya Yükle',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: pickFile,
+                      icon: Icon(Icons.upload_file),
+                      label: Text('Dosya Seç'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF080F2B),
+                        minimumSize: Size(double.infinity, 50),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    if (selectedFile != null) ...[
+                      Text(
+                        'Seçilen Dosya: ${selectedFile!.path.split('/').last}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _nameController,
+                              decoration: InputDecoration(
+                                labelText: 'Dosya İsmi',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  fileName = value;
+                                });
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 2,),
+                          Text("."),
+                          SizedBox(width: 2,),
+                          Expanded(
+                            child: TextField(
+                              controller: _executeController,
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                labelText: 'Uzantı',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  fileName = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                    TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Dosya Şifresi (Opsiyonel)',
+                        border: OutlineInputBorder(),
+                        suffixIcon: _passwordController.text.isNotEmpty
+                            ? IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _passwordController.clear();
+                              filePassword = '';
+                            });
+                          },
+                        )
+                            : null,
+                      ),
+                      obscureText: true,
+                      onChanged: (value) {
+                        setState(() {
+                          filePassword = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: selectedFile != null
+                          ? () async {
+                        LoadingIndicator(context).showLoading();
+                        String fileType = widget.title == "Özlük Dosyaları" ? "personel" : widget.title == "Beyannameler" ? "decleration" : "insurance";
+                        var file = await selectedFile!.readAsBytes();
+                        String fileNewName = _nameController.text + "." + _executeController.text;
+                        var f = await DatabaseHelper().createFile(
+                            fileNewName, fileType, filePassword, widget.currentUser, [widget.companyId, widget.companyAdmin].join(","), file, "file"
+                        );
+                        var comDetails = await DatabaseHelper().getCompanyDetails(widget.companyId);
+                        var adminDetails = await DatabaseHelper().getAdminDetails(widget.companyAdmin);
+                        String comFiles = comDetails!["companyFiles"];
+                        List<String> companyFiles = comFiles.split(",");
+                        String admFiles = adminDetails!["adminFiles"];
+                        List<String> adminFiles = admFiles.split(",");
+
+                        companyFiles.add(f);
+                        adminFiles.add(f);
+                        await DatabaseHelper().updateCompanyFiles(widget.companyId, companyFiles.join(","));
+                        await DatabaseHelper().updateAdminFiles(widget.companyAdmin, adminFiles.join(","));
+                        print(f);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }
+                          : null,
+                      child: Text('Karşıya Yükle'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF080F2B),
+                        minimumSize: Size(double.infinity, 50),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -121,12 +314,11 @@ class _FileViewPageState extends State<FileViewPage> {
       builder: (context) => AlertDialog(
         title: const Text('Dosya Bilgileri'),
         content: Text(
-            'Dosya İsmi : ' + document["fileName"].toString() + "\n\n" +
-                'Dosya Yolu : ' + document["filePath"].toString() + "\n\n" +
-                'Oluşturma Tarihi : ' + formatDateTime(document["fileCreated"]) + "\n\n" +
-                'Son İndirme Tarihi : ' + formatDateTime(document["fileDownloaded"]) + "\n\n" +
-                'Dosyayı Sahibi : ' + document["fileOwnerClient"].toString() + "\n\n" +
-                'Dosyayı Yükleyen : ' + document["fileUploadedBy"].toString() + "\n\n"
+                'Dosya İsmi : ' + document["fileName"].toString() + "\n\n" +
+                'U.S. Dosya Numarası : ' + document["fileID"].toString() + "\n\n" +
+                'Dosya Türü : ' + document["fileType"].toString() + "\n\n" +
+                'Dosyaya Erişimi Olanlar : ' + document["fileOwners"].toString() + "\n\n" +
+                'Dosyayı Yükleyen : ' + document["fileUploader"].toString() + "\n\n"
         ),
         actions: [
           TextButton(
@@ -143,7 +335,6 @@ class _FileViewPageState extends State<FileViewPage> {
   }
 
   void shareFile(Map<String, dynamic> document) {
-    // TODO: Download file logic before sharing
     print("GİRDİM ABE");
     Share.shareXFiles([XFile(document["filePath"])], text: 'Dosya');
   }
