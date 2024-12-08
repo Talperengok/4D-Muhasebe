@@ -31,7 +31,7 @@ class CompanyCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: Container(
         width: double.infinity,
-        height: 180,
+        height: 100,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [gradient1, gradient2],
