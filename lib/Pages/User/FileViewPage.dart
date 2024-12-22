@@ -1,11 +1,15 @@
+import 'package:dio/dio.dart';
 import 'package:direct_accounting/Components/FileCard.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FileViewPage extends StatefulWidget {
   final List<Map<String, dynamic>> documents;
@@ -35,23 +39,6 @@ class _FileViewPageState extends State<FileViewPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    askPermission();
-  }
-
-  Future<void> askPermission() async {
-    await Permission.manageExternalStorage.request();
-    var status = await Permission.manageExternalStorage.status;
-    if (!status.isGranted) {
-      status = await Permission.storage.request();
-      if (status.isGranted) {
-        print("Storage access granted!");
-      } else {
-        print("Storage access denied!");
-      }
-    }
-    setState(() {
-
-    });
   }
 
   @override
@@ -308,7 +295,8 @@ class _FileViewPageState extends State<FileViewPage> {
     //         "fileDownloaded" : DateTime.now,
     //         "fileOwnerClient" : "ABK LTD.",
     //         "fileUploadedBy" : "Admin"
-    ///
+
+    Map<String, String> fileTypeMap = {"decleration": "Beyanname", "personel" : "Özlük", "insurance" : "Sigorta"};
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -316,7 +304,7 @@ class _FileViewPageState extends State<FileViewPage> {
         content: Text(
                 'Dosya İsmi : ' + document["fileName"].toString() + "\n\n" +
                 'U.S. Dosya Numarası : ' + document["fileID"].toString() + "\n\n" +
-                'Dosya Türü : ' + document["fileType"].toString() + "\n\n" +
+                'Dosya Türü : ' + fileTypeMap[document["fileType"]].toString() + "\n\n" +
                 'Dosyaya Erişimi Olanlar : ' + document["fileOwners"].toString() + "\n\n" +
                 'Dosyayı Yükleyen : ' + document["fileUploader"].toString() + "\n\n"
         ),
@@ -330,13 +318,32 @@ class _FileViewPageState extends State<FileViewPage> {
     );
   }
 
-  void downloadFile(Map<String, dynamic> document) {
-    // TODO: Backend logic to download file
+  void downloadFile(Map<String, dynamic> document) async {
+    final uri = Uri.parse(document["filePath"]);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
-  void shareFile(Map<String, dynamic> document) {
-    print("GİRDİM ABE");
-    Share.shareXFiles([XFile(document["filePath"])], text: 'Dosya');
+
+  Future<void> shareFile(Map<String, dynamic> document) async{
+    String fileUrl = document["filePath"] ?? "";
+    if (fileUrl.isEmpty) {
+      print("Dosya yolu bulunamadı.");
+      return;
+    }
+    String savePath = "";
+    try {
+      Directory? appDocDir = await getDownloadsDirectory();
+      String fileName = fileUrl.split('/').last;
+      savePath = "${appDocDir!.path}/$fileName";
+      Dio dio = Dio();
+      // Dosyayı indir
+      await dio.download(fileUrl, savePath);
+
+      print("Dosya indirildi: $savePath");
+
+    } catch (e) {
+      print("Dosya indirilemedi: $e");
+    }    Share.shareXFiles([XFile(savePath)], text: document["fileName"]);
   }
 
   String formatDateTime(dynamic value) {

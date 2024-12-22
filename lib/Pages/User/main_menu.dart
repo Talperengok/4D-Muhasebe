@@ -9,25 +9,45 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../Components/MainMenuButton.dart';
 
-class MainMenu extends StatelessWidget {
-  final Map<String, dynamic> teamInfo;
+class MainMenu extends StatefulWidget {
   final String currentUserId;
   final bool isAdmin;
+  final String companyID;
 
   const MainMenu({
     Key? key,
-    required this.teamInfo,
     required this.currentUserId,
     required this.isAdmin,
+    required this.companyID,
   }) : super(key: key);
 
-  // Fonksiyonlar
+  @override
+  State<MainMenu> createState() => _MainMenuState();
+}
+
+class _MainMenuState extends State<MainMenu> {
+  Map<String, dynamic> teamInfo = {};
+
+  @override
+  void initState() {
+    super.initState();
+    getCompanyInfo();
+  }
+
+  Future<void> getCompanyInfo() async {
+    Map<String, dynamic>? info = await DatabaseHelper().getCompanyDetails(widget.companyID);
+    if (info != null) {
+      setState(() {
+        teamInfo = info;
+      });
+    } else {
+      setState(() {
+        teamInfo = {};
+      });
+    }
+  }
+
   Future<void> onPersonelFilesClicked(BuildContext context) async {
-    /*FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-    );
-    print(result!.paths);
-     */
     List<Map<String, dynamic>> docs = [];
     LoadingIndicator(context).showLoading();
     List<String> fileIds = teamInfo["companyFiles"].toString() != ""
@@ -47,12 +67,14 @@ class MainMenu extends StatelessWidget {
             documents: docs,
             title: "Özlük Dosyaları",
             imagePath: "assets/images/personel_logo.png",
-            currentUser: currentUserId,
+            currentUser: widget.currentUserId,
             companyId: teamInfo["companyID"],
             companyAdmin: teamInfo["companyAdmin"],
           )
       ),
-    );
+    ).then((_) async {
+      await getCompanyInfo(); // Geri dönünce companyInfo güncelleniyor
+    });
   }
 
   Future<void> onDeclerationsClicked(BuildContext context) async {
@@ -75,12 +97,14 @@ class MainMenu extends StatelessWidget {
             documents: docs,
             title: "Beyannameler",
             imagePath: "assets/images/beyanname.png",
-            currentUser: currentUserId,
+            currentUser: widget.currentUserId,
             companyId: teamInfo["companyID"],
             companyAdmin: teamInfo["companyAdmin"],
           )
       ),
-    );
+    ).then((_) async {
+      await getCompanyInfo();
+    });
   }
 
   Future<void> onInsurancesClicked(BuildContext context) async {
@@ -103,12 +127,14 @@ class MainMenu extends StatelessWidget {
             documents: docs,
             title: "Sigorta Dosyaları",
             imagePath: "assets/images/sigorta.png",
-            currentUser: currentUserId,
+            currentUser: widget.currentUserId,
             companyId: teamInfo["companyID"],
             companyAdmin: teamInfo["companyAdmin"],
           )
       ),
-    );
+    ).then((_) async {
+      await getCompanyInfo();
+    });
   }
 
   @override
@@ -124,13 +150,10 @@ class MainMenu extends StatelessWidget {
         .height;
     final bool isMobile = screenWidth < 800;
 
-    // Text için veriyi alıyoruz
     final String displayName = teamInfo.isNotEmpty
-        ? teamInfo['companyName'] ??
-        'Bilinmiyor'
+        ? (teamInfo['companyName'] ?? 'Bilinmiyor')
         : 'Bilinmiyor';
 
-    // MainMenuButton listesi
     final List<Map<String, String>> buttons = [
       {
         'title': 'Özlük Dosyaları',
@@ -151,6 +174,9 @@ class MainMenu extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: widget.isAdmin ? IconButton(onPressed: (){
+          Navigator.pop(context);
+        }, icon: Icon(Icons.arrow_back), color: Colors.white,) : SizedBox.shrink(),
         title: const Text('Direkt Muhasebe',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
         centerTitle: true,
