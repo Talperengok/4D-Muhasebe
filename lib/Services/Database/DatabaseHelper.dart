@@ -329,20 +329,20 @@ class DatabaseHelper {
     }
   }
 
-  Future<Map<String, dynamic>?> getFile(String fileID) async {
+  Future<Map<String, dynamic>> getFile(String fileID) async {
     var map = <String, dynamic>{
       'action': 'GET_FILE',
       'fileID': fileID,
     };
     var response = await http.post(Uri.parse(ROOT), body: map);
     if (response.statusCode == 200 && response.body.isNotEmpty) {
-      if (response.body.trim() == "[]") return null;
+      if (response.body.trim() == "[]") return {};
       var data = jsonDecode(response.body);
       if (data is Map<String, dynamic>) {
         return data;
       }
     }
-    return null;
+    return {};
   }
 
   //------------------ MESSAGES ------------------//
@@ -356,7 +356,7 @@ class DatabaseHelper {
       'messageList': messageList,
     };
     var response = await http.post(Uri.parse(ROOT), body: map);
-    return response.statusCode == 200 ? response.body : 'error';
+    return response.statusCode == 200 ? uid : 'error';
   }
 
   Future<String> updateConversationMessages(String messageUID, String messageList) async {
@@ -377,6 +377,37 @@ class DatabaseHelper {
     var response = await http.post(Uri.parse(ROOT), body: map);
     return response.statusCode == 200 ? response.body : 'error';
   }
+
+
+  Future<List<Map<String, dynamic>>> getMessages() async {
+    var map = <String, dynamic>{
+      'action': 'GET_MESSAGES',
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((e) => e as Map<String, dynamic>).toList();
+    } else {
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>> getMessage(String messageID) async {
+    var map = <String, dynamic>{
+      'action': 'GET_MESSAGE_DETAILS',
+      'messageID': messageID,
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      if (response.body.trim() == "[]") return {};
+      var data = jsonDecode(response.body);
+      if (data is Map<String, dynamic>) {
+        return data;
+      }
+    }
+    return {};
+  }
+
 
   //------------------ AUTHENTICATE_USER ------------------//
   Future<bool> authenticateUser(String type, String id, String password) async {

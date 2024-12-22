@@ -1,9 +1,12 @@
 import 'package:direct_accounting/Pages/Admin/AdminCompaniesPage.dart';
 import 'package:direct_accounting/Pages/BaseAdminPage.dart';
+import 'package:direct_accounting/Pages/User/LoginPage.dart';
 import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -35,7 +38,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //home: AdminPanelPage(),
-      home: AdminCompaniesPage(adminID: 'HaSi352299031',),
+      //HaSi352299031
+      //ABLT573074829
+      //HALT135112727
+      home: LoginPage(),
     );
   }
 }

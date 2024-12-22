@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:flutter/material.dart';
 import '../../Components/CompanyCard.dart';
 import '../User/main_menu.dart';
@@ -73,12 +74,17 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
   }
 
   // Şirket detaylarını göster
-  void showDetails(String companyID) {
+  void showDetails(Map<String, dynamic> company) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Company Details"),
-        content: Text("Details for company ID: $companyID"),
+        title: Text("Müvekkil Detayları"),
+        content: Column(
+          children: [
+            Text("İsim: ${company["companyName"]}"),
+            Text("U.S. No: ${company["companyID"]}"),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -94,7 +100,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       context,
       MaterialPageRoute(
         builder: (context) => MainMenu(
-          isAdmin: true, teamInfo: company, currentUserId: widget.adminID,
+          isAdmin: true, companyID: company["companyID"], currentUserId: widget.adminID,
         ),
       ),
     );
@@ -102,7 +108,12 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
 
   // Mesaj gönder
   void sendMessage(String companyID) {
-    // Henüz doldurulmadı
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) =>
+          ChatPage(currentUserID: widget.adminID, companyID: companyID, adminID: widget.adminID)
+      ),
+    );
   }
 
   // Şirket oluşturma dialogunu aç
@@ -223,7 +234,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Direkt Muhasebe',
+          'Direkt Muhasebe - Muhasebeci',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -253,7 +264,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
                   gradient2: Color(0xFF325477),
                   buttonColor: Color(0xFF080F2B),
                   iconColor: Colors.white,
-                  showDetails: () => showDetails(company['companyID'].toString()),
+                  showDetails: () => showDetails(company),
                   sendMessage: () => sendMessage(company['companyID'].toString()),
                   showFiles: () => showFiles(company),
                 ),
