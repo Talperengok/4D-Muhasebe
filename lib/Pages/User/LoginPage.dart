@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:direct_accounting/Pages/Admin/AdminCompaniesPage.dart';
 import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
@@ -15,9 +17,15 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String userType = "Admin";
 
-  TextEditingController idController = TextEditingController();
+  bool isLogin = true;
 
+  TextEditingController idController = TextEditingController();
+  TextEditingController uidController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordAgainController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController companyIdController = TextEditingController();
+  TextEditingController accountantIdController = TextEditingController();
 
   @override
   void initState() {
@@ -35,13 +43,49 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  String _toEnglishChar(String input) {
+    return input
+        .replaceAll('İ', 'I')
+        .replaceAll('ı', 'i')
+        .replaceAll('ö', 'o')
+        .replaceAll('Ö', 'O')
+        .replaceAll('ü', 'u')
+        .replaceAll('Ü', 'U')
+        .replaceAll('ç', 'c')
+        .replaceAll('Ç', 'C')
+        .replaceAll('ş', 's')
+        .replaceAll('Ş', 'S')
+        .replaceAll('ğ', 'g')
+        .replaceAll('Ğ', 'G');
+  }
+
+  String generateUID(String value) {
+    String eng = _toEnglishChar(value);
+    List<String> words = eng.split(" ");
+    String prefix = "";
+    for (var w in words) {
+      if (w.length >= 2) {
+        prefix += w.substring(0, 2);
+      } else {
+        prefix += w;
+      }
+    }
+
+    // 9 haneli rastgele sayı üret
+    final random = Random();
+    int number = random.nextInt(999999999); // 0-999999999 arası
+    String numberStr = number.toString().padLeft(9, '0');
+
+    return prefix + numberStr;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Giriş Yap',
-          style: TextStyle(
+        title: Text(
+          isLogin ? 'Giriş Yap' : "Kayıt Ol",
+          style:const  TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -49,47 +93,289 @@ class _LoginPageState extends State<LoginPage> {
         centerTitle: true,
         backgroundColor: const Color(0xFF080F2B),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: isLogin ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ElevatedButton(
-                  onPressed: ()  {
-                    userType = "Admin";
-                    setState(() {
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: ()  {
+                        userType = "Admin";
+                        setState(() {
 
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: userType == "Admin" ? Color(0xFF080F2B) : Color(0xFF908EC0),
-                  ),
-                  child: const Text(
-                    'Muhasebeci',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: userType == "Admin" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                      ),
+                      child: const Text(
+                        'Muhasebeci',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
+                    SizedBox(width: 5,),
+                    ElevatedButton(
+                      onPressed: ()  {
+                          userType = "Company";
+                          setState(() {
+
+                          });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: userType == "Company" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                      ),
+                      child: const Text(
+                        'Müvekkil',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5,),
+                const Text(
+                  'Hoş Geldiniz!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
-                SizedBox(width: 5,),
-                ElevatedButton(
-                  onPressed: ()  {
-                      userType = "Company";
+                const SizedBox(height: 24),
+                TextField(
+                  controller: idController,
+                  decoration: InputDecoration(
+                    labelText: 'Kullanıcı ID',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  obscureText: true,
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Şifre',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () async {
+                  bool auth = await DatabaseHelper().authenticateUser(userType, idController.text, passwordController.text);
+                  if(auth){
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString('uid', idController.text);
+                    if(userType == "Admin") {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) =>
+                            AdminCompaniesPage(adminID: idController.text)
+                        ),
+                      );
+                    }
+                    else if(userType == "Company"){
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) =>
+                            MainMenu(companyID: idController.text, currentUserId: idController.text, isAdmin: false)
+                        ),
+                      );
+                    }
+                  }
+                  else{
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Giriş yapılırken bir sorun oluştu! Bilgilerinizi ve kullanıcı türünü kontrol edin.")));
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF080F2B),
+                ),
+                child: const Text(
+                  'Giriş Yap',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+                TextButton(
+                    onPressed: (){
+                      isLogin = false;
                       setState(() {
 
                       });
+                    },
+                    child: Text("Hesabınız Yok Mu? Kayıt Olun!", style: TextStyle(color: Colors.white),)
+                )
+              ],
+            ) :
+            userType == "Admin" ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: ()  {
+                        userType = "Admin";
+                        setState(() {
+
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: userType == "Admin" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                      ),
+                      child: const Text(
+                        'Muhasebeci',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 5,),
+                    ElevatedButton(
+                      onPressed: ()  {
+                        userType = "Company";
+                        setState(() {
+
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: userType == "Company" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                      ),
+                      child: const Text(
+                        'Müvekkil',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5,),
+                const Text(
+                  'Hoş Geldiniz!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: idController,
+                  decoration: InputDecoration(
+                    labelText: 'Sicil Numarası',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Muhasebe Kişi / Şirket İsmi',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  obscureText: true,
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Şifre',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  obscureText: true,
+                  controller: passwordAgainController,
+                  decoration: InputDecoration(
+                    labelText: 'Şifre Tekrar',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () async {
+                    if(passwordController.text == passwordAgainController.text) {
+                      await DatabaseHelper().createAdmin(
+                          idController.text,
+                          nameController.text,
+                          "",
+                          DateTime.now().add(Duration(days: 365)).toString(),
+                          passwordController.text,
+                          "",
+                          "");
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) =>
+                            AdminCompaniesPage(adminID: idController.text)
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: userType == "Company" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                    backgroundColor: Color(0xFF080F2B),
                   ),
                   child: const Text(
-                    'Müvekkil',
+                    'Kayıt Ol',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -97,85 +383,215 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                TextButton(
+                    onPressed: (){
+                      isLogin = true;
+                      setState(() {
+
+                      });
+                },
+                child: Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Colors.white))
+                )
+              ],
+            ) : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: ()  {
+                        userType = "Admin";
+                        setState(() {
+
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: userType == "Admin" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                      ),
+                      child: const Text(
+                        'Muhasebeci',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 5,),
+                    ElevatedButton(
+                      onPressed: ()  {
+                        userType = "Company";
+                        setState(() {
+
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: userType == "Company" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                      ),
+                      child: const Text(
+                        'Müvekkil',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5,),
+                const Text(
+                  'Hoş Geldiniz!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Kişi / Şirket İsmi',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: companyIdController,
+                        decoration: InputDecoration(
+                          labelText: 'Şirket Kullanıcı Adı',
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          filled: true,
+                          fillColor: Colors.white10,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    IconButton(
+                        onPressed: (){
+                          String u = generateUID(nameController.text);
+                          companyIdController.text = u;
+                        },
+                        icon: Icon(Icons.rocket_launch_rounded))
+                  ],
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: idController,
+                  decoration: InputDecoration(
+                    labelText: 'Muhasebeci Sicil No',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: uidController,
+                  decoration: InputDecoration(
+                    labelText: 'Muhasebeci Benzersiz Kimlik',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  obscureText: true,
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Şifre',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  obscureText: true,
+                  controller: passwordAgainController,
+                  decoration: InputDecoration(
+                    labelText: 'Şifre Tekrar',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () async {
+                    if(passwordAgainController.text == passwordController.text){
+                      var acc = await DatabaseHelper().getAdminDetails(idController.text);
+                      if(acc != null && acc.isNotEmpty){
+                        String accUID = acc["UID"];
+                        if(accUID == uidController.text){
+                          await DatabaseHelper().createCompany(companyIdController.text, nameController.text, idController.text, "", passwordController.text, "");
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                MainMenu(currentUserId: companyIdController.text, isAdmin: false, companyID: companyIdController.text)
+                            ),
+                          );
+                        }
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF080F2B),
+                  ),
+                  child: const Text(
+                    'Kayıt Ol',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                TextButton(
+                    onPressed: (){
+                      isLogin = true;
+                      setState(() {
+
+                      });
+                    },
+                    child: Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Colors.white))
+                )
               ],
             ),
-            const Text(
-              'Hoş Geldiniz!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: idController,
-              decoration: InputDecoration(
-                labelText: 'Kullanıcı ID',
-                labelStyle: const TextStyle(color: Colors.white70),
-                filled: true,
-                fillColor: Colors.white10,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              style: const TextStyle(color: Colors.white),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              obscureText: true,
-              controller: passwordController,
-              decoration: InputDecoration(
-                labelText: 'Şifre',
-                labelStyle: const TextStyle(color: Colors.white70),
-                filled: true,
-                fillColor: Colors.white10,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              style: const TextStyle(color: Colors.white),
-            ),
-            const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () async {
-              bool auth = await DatabaseHelper().authenticateUser(userType, idController.text, passwordController.text);
-              if(auth){
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                prefs.setString('uid', idController.text);
-                if(userType == "Admin") {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) =>
-                        AdminCompaniesPage(adminID: idController.text)
-                    ),
-                  );
-                }
-                else if(userType == "Company"){
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) =>
-                        MainMenu(companyID: idController.text, currentUserId: idController.text, isAdmin: false)
-                    ),
-                  );
-                }
-              }
-
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF080F2B),
-            ),
-            child: const Text(
-              'Giriş Yap',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
           ),
-          ],
         ),
       ),
       backgroundColor: const Color(0xFF908EC0),

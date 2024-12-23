@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../Components/CompanyCard.dart';
 import '../User/main_menu.dart';
 import 'package:intl/intl.dart';
@@ -118,36 +119,15 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
 
   // Şirket oluşturma dialogunu aç
   void openCreateCompanyDialog() {
-    final TextEditingController _companyNameController = TextEditingController();
-    final TextEditingController _companyPasswordController = TextEditingController();
-    DateTime selectedDate = DateTime.now().add(Duration(days: 30));
-
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder( // StatefulBuilder kullanarak dialog içinde setState yapabiliriz
           builder: (context, setState) {
             return AlertDialog(
-              title: Text("Şirket Oluştur"),
-              content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _companyNameController,
-                      decoration: InputDecoration(
-                        labelText: "Şirket İsmi",
-                      ),
-                    ),
-                    TextField(
-                      controller: _companyPasswordController,
-                      decoration: InputDecoration(
-                        labelText: "Şirket Şifresi",
-                      ),
-                      obscureText: true,
-                    ),
-                  ],
-                ),
-              ),
+              title: Text("Müvekkil Ekle"),
+              content: Text('Müvekkil ekleyebilmek için aşağıdaki "Muhasebeci Bilgilerini Kopyala" butonuna tıklayın'
+                  ' ve kopyalanan bilgileri müvekkilinize iletip, o bilgilerle uygulamaya kayıt olmasını isteyin.'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -156,38 +136,13 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
                   child: Text("İptal"),
                 ),
                 ElevatedButton(
-                  onPressed: () async {
-                    String companyName = _companyNameController.text.trim();
-                    String companyPassword = _companyPasswordController.text.trim();
-
-                    if (companyName.isEmpty || companyPassword.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Lütfen tüm alanları doldurun")),
-                      );
-                      return;
-                    }
-
-                    String result = await dbHelper.createCompany(
-                      companyName,
-                      widget.adminID,
-                      "",
-                      companyPassword,
-                      ""
-                    );
-
-                    if (result.contains("success")) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Şirket başarıyla oluşturuldu")),
-                      );
-                      Navigator.pop(context);
-                      getAdminData();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Şirket oluşturulamadı")),
-                      );
-                    }
+                  onPressed: () {
+                    String mess = "Merhabalar, belge paylaşımlarımızı ve iletişimlerimizi "
+                        "tek bir yerden yönetebilmemiz için Direkt Muhasebe uygulamasını indirip aşağıdaki bilgilerle "
+                        "kayıt olunuz:\n\nMuhasebeci Sicil No: ${adminData["adminID"]}\nMuhasebeci Benzersiz Kimlik: ${adminData["UID"]}";
+                    Clipboard.setData(ClipboardData(text: mess));
                   },
-                  child: Text("Oluştur"),
+                  child: Text("Muhasebeci Bilgilerini Kopyala"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF080F2B),
                   ),

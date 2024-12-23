@@ -45,11 +45,12 @@ class DatabaseHelper {
   }
 
   //------------------ ADMINS ------------------//
-  Future<String> createAdmin(String adminName, String adminCompanies, String adminExpiryDate, String adminPassword, String adminFiles, String adminMessages) async {
+  Future<String> createAdmin(String adminID, String adminName, String adminCompanies, String adminExpiryDate, String adminPassword, String adminFiles, String adminMessages) async {
     String uid = generateUID(adminName);
     var map = <String, dynamic>{
       'action': 'CREATE_ADMIN',
-      'adminID': uid,
+      'adminID': adminID,
+      'UID': uid,
       'adminName': adminName,
       'adminCompanies': adminCompanies,
       'adminExpiryDate': adminExpiryDate,
@@ -67,6 +68,16 @@ class DatabaseHelper {
       'adminID': adminID,
       'adminName': adminName,
       'adminPassword': adminPassword,
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    return response.statusCode == 200 ? response.body : 'error';
+  }
+
+  Future<String> updateAdminConfirmed(String adminID, bool confirmed) async {
+    var map = <String, dynamic>{
+      'action': 'UPDATE_ADMIN_CONFIRMED',
+      'adminID': adminID,
+      'confirmed': confirmed ? "YES" : "NO",
     };
     var response = await http.post(Uri.parse(ROOT), body: map);
     return response.statusCode == 200 ? response.body : 'error';
@@ -160,8 +171,7 @@ class DatabaseHelper {
   }
 
   //------------------ COMPANIES ------------------//
-  Future<String> createCompany(String companyName, String companyAdmin, String companyMessage, String companyPassword, String companyFiles) async {
-    String uid = generateUID(companyName);
+  Future<String> createCompany(String uid, String companyName, String companyAdmin, String companyMessage, String companyPassword, String companyFiles) async {
     var map = <String, dynamic>{
       'action': 'CREATE_COMPANY',
       'companyID': uid,
