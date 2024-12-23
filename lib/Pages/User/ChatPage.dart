@@ -1,10 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:direct_accounting/Components/CustomDrawer.dart';
 import 'package:direct_accounting/Components/FileCard.dart';
+import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
+import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -53,16 +58,46 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   Map<String, dynamic> adminData = {};
   Map<String, dynamic> companyData = {};
-
+  late Timer _timer;
   List<Map<String, dynamic>> _messages = [];
   bool _loading = true;
-
   final TextEditingController _messageController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    _startPolling();
+  }
+
+  void _startPolling() {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      _checkForNewMessages();
+    });
+  }
+
+  Future<void> _checkForNewMessages() async {
+    try {
+      Map<String, dynamic> messageData = await DatabaseHelper().getMessage(
+          companyData["companyMessage"]);
+      String incomingJsonMessages = messageData["messageList"];
+      List<Map<String, dynamic>> newMessages = jsonStringToMessageList(incomingJsonMessages);
+
+      if (!listEquals(_messages, newMessages)) {
+        setState(() {
+          _messages = newMessages;
+        });
+      }
+    } catch (e) {
+      print("Hata oluştu: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   Future<void> fetchData() async {
@@ -529,16 +564,54 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        leading: IconButton(onPressed: (){
-          Navigator.pop(context);
-        }, icon: Icon(Icons.arrow_back), color: Colors.white,),
+        leading: widget.adminID == widget.currentUserID
+            ? IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back), color: Colors.white,)
+            : IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          icon: Icon(Icons.menu), color: Colors.white,),
         title: const Text('Sohbet',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
         backgroundColor: Color(0xFF080F2B),
       ),
       backgroundColor: Color(0xFF908EC0),
-      body: _loading
+        drawer: CustomDrawer(
+          onButton1Pressed: (){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  MainMenu(currentUserId: widget.companyID, isAdmin: false, companyID: widget.companyID)
+              ),
+            );
+          },
+          onButton2Pressed: (){
+
+          },
+          onButton3Pressed: () async {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  ChatPage(currentUserID: widget.companyID, companyID: widget.companyID, adminID: companyData["companyAdmin"])
+              ),
+            );
+          },
+          onButton4Pressed: (){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  CompanyUpdatePage(companyID: widget.companyID)
+              ),
+            );
+          },
+          page: 3,),
+        body: _loading
           ? Center(child: CircularProgressIndicator())
           : Column(
         children: [

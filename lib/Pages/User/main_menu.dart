@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:direct_accounting/Components/CustomDrawer.dart';
+import 'package:direct_accounting/Pages/User/ChatPage.dart';
+import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
 import 'package:direct_accounting/Pages/User/FileViewPage.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
+import 'package:direct_accounting/Services/Others/EncryptManager.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../Components/MainMenuButton.dart';
 
@@ -27,6 +29,7 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   Map<String, dynamic> teamInfo = {};
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -35,7 +38,8 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   Future<void> getCompanyInfo() async {
-    Map<String, dynamic>? info = await DatabaseHelper().getCompanyDetails(widget.companyID);
+    Map<String, dynamic>? info = await DatabaseHelper().getCompanyDetails(
+        widget.companyID);
     if (info != null) {
       setState(() {
         teamInfo = info;
@@ -173,15 +177,66 @@ class _MainMenuState extends State<MainMenu> {
     ];
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        leading: widget.isAdmin ? IconButton(onPressed: (){
-          Navigator.pop(context);
-        }, icon: Icon(Icons.arrow_back), color: Colors.white,) : SizedBox.shrink(),
+        leading: widget.isAdmin
+            ? IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back), color: Colors.white,)
+            : IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          icon: Icon(Icons.menu), color: Colors.white,),
         title: const Text('Direkt Muhasebe',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
         centerTitle: true,
+        actions: [
+          if(!widget.isAdmin)
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>
+                      ChatPage(currentUserID: widget.currentUserId, companyID: widget.companyID, adminID: teamInfo["companyAdmin"])
+                  ),
+                );
+              },
+              icon: Icon(Icons.chat), color: Colors.white,)
+        ],
         backgroundColor: Color(0xFF080F2B),
       ),
+      drawer: !widget.isAdmin ? CustomDrawer(
+          onButton1Pressed: (){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  MainMenu(currentUserId: widget.currentUserId, isAdmin: false, companyID: widget.currentUserId)
+              ),
+            );
+          },
+          onButton2Pressed: (){
+
+          },
+          onButton3Pressed: () async {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  ChatPage(currentUserID: widget.currentUserId, companyID: widget.companyID, adminID: teamInfo["companyAdmin"])
+              ),
+            );
+          },
+          onButton4Pressed: (){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  CompanyUpdatePage(companyID: widget.companyID)
+              ),
+            );
+          },
+          page: 1,) : null,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isMobile

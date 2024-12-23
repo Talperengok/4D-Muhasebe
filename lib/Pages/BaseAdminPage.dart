@@ -40,42 +40,6 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
     });
   }
 
-  Future<void> createAdmin() async {
-    if (_adminNameController.text.isEmpty || _adminPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Lütfen isim ve şifre giriniz")),
-      );
-      return;
-    }
-
-    // expiry date = şimdi + 30 gün
-    DateTime expiryDate = DateTime.now().add(Duration(days: 30));
-    String expiryDateStr = DateFormat('yyyy-MM-dd').format(expiryDate);
-
-    var result = await dbHelper.createAdmin(
-      _adminNameController.text,
-      "", // adminCompanies boş string
-      expiryDateStr,
-      _adminPasswordController.text,
-      "", // adminFiles boş string
-      "", // adminMessages boş string
-    );
-    print(result);
-
-    if (result.contains("success")) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Admin başarıyla oluşturuldu")),
-      );
-      _adminNameController.clear();
-      _adminPasswordController.clear();
-      fetchAdmins();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Admin oluşturulamadı")),
-      );
-    }
-  }
-
   Future<void> deleteAdmin(String adminID) async {
     /*var result = await dbHelper.deleteAdmin(adminID);
     if (result.contains("success")) {
@@ -111,37 +75,6 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
             ? Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Admin Yönetimi",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            SizedBox(height: 16),
-            // Admin Ekleme Formu
-            TextField(
-              controller: _adminNameController,
-              decoration: InputDecoration(
-                labelText: "Admin Name",
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-            SizedBox(height: 8),
-            TextField(
-              controller: _adminPasswordController,
-              decoration: InputDecoration(
-                labelText: "Admin Password",
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              obscureText: true,
-            ),
-            SizedBox(height: 8),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF080F2B)),
-              onPressed: createAdmin,
-              child: Text("Admin Oluştur"),
-            ),
-            SizedBox(height: 16),
             Expanded(
               child: loading
                   ? Center(child: CircularProgressIndicator())
@@ -156,21 +89,34 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
                         children: [
                           Row(
                             children: [
-                              Text("UID: ${admin['adminID']}", style: TextStyle(fontWeight: FontWeight.bold),),
+                              Text("Sicil: ${admin['adminID']}", style: TextStyle(fontWeight: FontWeight.bold),),
                               SizedBox(width: 5,),
                               IconButton(
                                   onPressed: (){
                                     Clipboard.setData(ClipboardData(text: admin['adminID']));
                                   },
                                   icon: Icon(Icons.copy)
+                              ),
+                              SizedBox(width: 5,),
+                              IconButton(
+                                  onPressed: () async {
+                                    if(admin["confirmed"] == "YES"){
+                                      await DatabaseHelper().updateAdminConfirmed(admin['adminID'], false);
+                                    }
+                                    else{
+                                      await DatabaseHelper().updateAdminConfirmed(admin['adminID'], true);
+                                    }
+                                    fetchAdmins();
+                                  },
+                                  icon: Icon(admin["confirmed"] == "YES" ? Icons.check_circle : Icons.remove_circle, color: admin["confirmed"] == "YES" ? Colors.green : Colors.red,)
                               )
                             ],
                           ),
                           SizedBox(height: 2,),
-                          Text("Name: ${admin['adminName']}"),
+                          Text("İsim: ${admin['adminName']}"),
                         ],
                       ),
-                      subtitle: Text("Expiry: ${admin['adminExpiryDate']}"),
+                      subtitle: Text("Üyelik Bitiş: ${admin['adminExpiryDate']}"),
                       trailing: IconButton(
                         icon: Icon(Icons.delete, color: Colors.red),
                         onPressed: () => deleteAdmin(admin['adminID'].toString()),
@@ -188,36 +134,6 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Admin Yönetimi",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: _adminNameController,
-                  decoration: InputDecoration(
-                    labelText: "Admin Name",
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 8),
-                TextField(
-                  controller: _adminPasswordController,
-                  decoration: InputDecoration(
-                    labelText: "Admin Password",
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  obscureText: true,
-                ),
-                SizedBox(height: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF080F2B)),
-                  onPressed: createAdmin,
-                  child: Text("Admin Oluştur"),
-                ),
-                SizedBox(height: 16),
                 Expanded(
                   child: loading
                       ? Center(child: CircularProgressIndicator())
