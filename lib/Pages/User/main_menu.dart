@@ -1,20 +1,19 @@
-import 'dart:io';
-
 import 'package:direct_accounting/Components/CustomDrawer.dart';
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
 import 'package:direct_accounting/Pages/User/FileViewPage.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
-import 'package:direct_accounting/Services/Others/EncryptManager.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 import '../../Components/MainMenuButton.dart';
 
+
+///MAIN MENU PAGE - 2ND PAGE FOR ACCOUNTANTS BUT MAIN PAGE OF CLIENTS
 class MainMenu extends StatefulWidget {
-  final String currentUserId;
-  final bool isAdmin;
-  final String companyID;
+  final String currentUserId; //VIEWER USER ID
+  final bool isAdmin; // IS VIEWER ACCOUNTANT
+  final String companyID; //THE CURRENT PAGE'S CLIENT
 
   const MainMenu({
     Key? key,
@@ -28,7 +27,7 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-  Map<String, dynamic> teamInfo = {};
+  Map<String, dynamic> teamInfo = {}; //WHICH CLIENT'S PAGE?
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -37,6 +36,7 @@ class _MainMenuState extends State<MainMenu> {
     getCompanyInfo();
   }
 
+  //GETS CLIENT DETAILS
   Future<void> getCompanyInfo() async {
     Map<String, dynamic>? info = await DatabaseHelper().getCompanyDetails(
         widget.companyID);
@@ -51,6 +51,7 @@ class _MainMenuState extends State<MainMenu> {
     }
   }
 
+  //OPEN PERSONEL FILES (ÖZLÜK)
   Future<void> onPersonelFilesClicked(BuildContext context) async {
     List<Map<String, dynamic>> docs = [];
     LoadingIndicator(context).showLoading();
@@ -77,10 +78,11 @@ class _MainMenuState extends State<MainMenu> {
           )
       ),
     ).then((_) async {
-      await getCompanyInfo(); // Geri dönünce companyInfo güncelleniyor
+      await getCompanyInfo();
     });
   }
 
+  //OPEN DECLARATION FILES (BEYANNAME)
   Future<void> onDeclerationsClicked(BuildContext context) async {
     List<Map<String, dynamic>> docs = [];
     LoadingIndicator(context).showLoading();
@@ -111,6 +113,7 @@ class _MainMenuState extends State<MainMenu> {
     });
   }
 
+  //OPEN INSURANCE FILES (SIGORTA)
   Future<void> onInsurancesClicked(BuildContext context) async {
     List<Map<String, dynamic>> docs = [];
     LoadingIndicator(context).showLoading();
@@ -143,7 +146,6 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    // MediaQuery'den genişlik değeri alınıyor
     final double screenWidth = MediaQuery
         .of(context)
         .size
@@ -152,7 +154,7 @@ class _MainMenuState extends State<MainMenu> {
         .of(context)
         .size
         .height;
-    final bool isMobile = screenWidth < 800;
+    final bool isMobile = screenWidth < 800; //GET SCREEN WIDTH AND DECIDE MOBILE OR DESKTOP LAYOUT
 
     final String displayName = teamInfo.isNotEmpty
         ? (teamInfo['companyName'] ?? 'Bilinmiyor')

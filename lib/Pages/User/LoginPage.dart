@@ -1,11 +1,11 @@
 import 'dart:math';
-
 import 'package:direct_accounting/Pages/Admin/AdminCompaniesPage.dart';
 import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+///LOGIN PAGE
 class LoginPage extends StatefulWidget {
 
   LoginPage({Key? key}) : super(key: key);
@@ -15,9 +15,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String userType = "Admin";
+  String userType = "Admin"; //DEFINE LOGGING USER
 
-  bool isLogin = true;
+  bool isLogin = true; //DEFINE LOGIN OR SIGNUP PAGE
 
   TextEditingController idController = TextEditingController();
   TextEditingController uidController = TextEditingController();
@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
     checkUID();
   }
 
+  //CHECK LAST LOGIN
   Future<void> checkUID() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String savedUid = prefs.getString('uid') ?? '';
@@ -43,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  //CONVERT TURKISH CHARS TO ENGLISH CHARS
   String _toEnglishChar(String input) {
     return input
         .replaceAll('İ', 'I')
@@ -59,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
         .replaceAll('Ğ', 'G');
   }
 
+  //GENERATE RANDOMIZED UID
   String generateUID(String value) {
     String eng = _toEnglishChar(value);
     List<String> words = eng.split(" ");
@@ -71,9 +74,8 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
 
-    // 9 haneli rastgele sayı üret
     final random = Random();
-    int number = random.nextInt(999999999); // 0-999999999 arası
+    int number = random.nextInt(999999999);
     String numberStr = number.toString().padLeft(9, '0');
 
     return prefix + numberStr;
@@ -101,12 +103,12 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
+                Row( //IS LOGIN PANEL ACTIVATED
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: ()  {
-                        userType = "Admin";
+                        userType = "Admin"; //CHANGE USER TYPE
                         setState(() {
 
                         });
@@ -126,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(width: 5,),
                     ElevatedButton(
                       onPressed: ()  {
-                          userType = "Company";
+                          userType = "Company"; //CHANGE USER TYPE
                           setState(() {
 
                           });
@@ -187,6 +189,8 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () async {
+                  //LOGIN IF USER EXIST FOR SELECTED USER TYPE
+
                   bool auth = await DatabaseHelper().authenticateUser(userType, idController.text, passwordController.text);
                   if(auth){
                     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -226,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
                 TextButton(
                     onPressed: (){
-                      isLogin = false;
+                      isLogin = false; //CHANGE PAGE TO SIGNUP PAGE
                       setState(() {
 
                       });
@@ -244,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     ElevatedButton(
                       onPressed: ()  {
-                        userType = "Admin";
+                        userType = "Admin"; //CHANGE USER TYPE
                         setState(() {
 
                         });
@@ -264,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(width: 5,),
                     ElevatedButton(
                       onPressed: ()  {
-                        userType = "Company";
+                        userType = "Company"; //CHANGE USER TYPE
                         setState(() {
 
                         });
@@ -354,6 +358,8 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
+                    //CREATE ACCOUNT FOR NEW ACCOUNTANT
+
                     if(passwordController.text == passwordAgainController.text) {
                       await DatabaseHelper().createAdmin(
                           idController.text,
@@ -385,7 +391,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 TextButton(
                     onPressed: (){
-                      isLogin = true;
+                      isLogin = true; //CHANGE PAGE TO LOGIN PAGE
                       setState(() {
 
                       });
@@ -402,7 +408,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     ElevatedButton(
                       onPressed: ()  {
-                        userType = "Admin";
+                        userType = "Admin"; //CHANGE USER TYPE
                         setState(() {
 
                         });
@@ -422,7 +428,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(width: 5,),
                     ElevatedButton(
                       onPressed: ()  {
-                        userType = "Company";
+                        userType = "Company"; //CHANGE USER TYPE
                         setState(() {
 
                         });
@@ -552,6 +558,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
+                    //CREATE ACCOUNT FOR NEW CLIENT
                     if(passwordAgainController.text == passwordController.text){
                       var acc = await DatabaseHelper().getAdminDetails(idController.text);
                       if(acc != null && acc.isNotEmpty){
@@ -582,7 +589,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 TextButton(
                     onPressed: (){
-                      isLogin = true;
+                      isLogin = true; //CHANGE PAGE TO LOGIN PAGE
                       setState(() {
 
                       });

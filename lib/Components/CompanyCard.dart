@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
+///THE WIDGET WHICH SHOWN IN ACCOUNTANT MAIN PAGE FOR EACH COMPANY
+
 class CompanyCard extends StatelessWidget {
-  final Map<String, dynamic> companyData;
-  final Color gradient1;
-  final Color gradient2;
-  final Color buttonColor;
-  final Color iconColor;
-  final Function showDetails;
-  final Function sendMessage;
-  final Function showFiles;
+  final Map<String, dynamic> companyData; //Company Data (name, id, files, messages etc.)
+  final Color gradient1; //Card Gradient's 1st color
+  final Color gradient2; //Card Gradient's 2nd color
+  final Color buttonColor; //Card buttons' color
+  final Color iconColor; //Buttons' icons' color
+  final Function showDetails; //Function That Showing Company Info
+  final Function sendMessage; //Function That Redirects Accountant to Chat Page with Company
+  final Function showFiles; //Function That Redirects Accountant to File View Page of Company
 
   const CompanyCard({
     required this.companyData,
@@ -26,7 +28,7 @@ class CompanyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10), // Köşeler
+        borderRadius: BorderRadius.circular(10),
       ),
       margin: EdgeInsets.zero,
       child: Container(
@@ -38,9 +40,9 @@ class CompanyCard extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
-          borderRadius: BorderRadius.circular(10), // Köşeler yuvarlatıldı
+          borderRadius: BorderRadius.circular(10),
         ),
-        padding: const EdgeInsets.all(8), // İçerik için padding
+        padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

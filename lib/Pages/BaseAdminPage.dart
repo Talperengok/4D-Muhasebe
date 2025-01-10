@@ -1,14 +1,12 @@
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
+///ADMIN PANEL FOR OUR TEAM - JUST 4 PERSONS CAN ACCESS IT
 class AdminPanelPage extends StatefulWidget {
-  // Burada panel admin'in sabit kullanıcı adı ve şifresi:
-  final String panelAdminUser = "panelAdmin";
+  /*final String panelAdminUser = "panelAdmin";
   final String panelAdminPass = "panel123";
-
-  // Bu örnekte panel sayfası doğrudan açılıyor, ama normalde bir login ekranı ile kontrol edebilirsiniz.
+   */
 
   @override
   _AdminPanelPageState createState() => _AdminPanelPageState();
@@ -20,8 +18,9 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
   List<Map<String, dynamic>> admins = [];
   bool loading = false;
 
-  final TextEditingController _adminNameController = TextEditingController();
+  /*final TextEditingController _adminNameController = TextEditingController();
   final TextEditingController _adminPasswordController = TextEditingController();
+   */
 
   @override
   void initState() {
@@ -29,6 +28,7 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
     fetchAdmins();
   }
 
+  //GET ACCOUNTANTS
   Future<void> fetchAdmins() async {
     setState(() {
       loading = true;
@@ -40,6 +40,7 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
     });
   }
 
+  //DELETE ACCOUNTANTS
   Future<void> deleteAdmin(String adminID) async {
     /*var result = await dbHelper.deleteAdmin(adminID);
     if (result.contains("success")) {

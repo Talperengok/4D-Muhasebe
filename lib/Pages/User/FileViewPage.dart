@@ -5,19 +5,19 @@ import 'package:direct_accounting/widget/loading_indicator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+///PAGE TO VIEW, DOWNLOAD AND SHARE FILES CATEGORICALLY
+
 class FileViewPage extends StatefulWidget {
-  final List<Map<String, dynamic>> documents;
-  final String title;
-  final String imagePath;
-  final String currentUser;
-  final String companyId;
-  final String companyAdmin;
+  final List<Map<String, dynamic>> documents; //CLIENT DOCUMENT OF CATEGORY
+  final String title; //CATEGORY NAME
+  final String imagePath; //CATEGORY IMAGE PATH IN ASSETS
+  final String currentUser; //VIEWER USER ID
+  final String companyId; //CLIENT ID
+  final String companyAdmin; //ACCOUNTANT ID
 
   const FileViewPage({
     required this.documents,
@@ -35,11 +35,37 @@ class FileViewPage extends StatefulWidget {
 
 class _FileViewPageState extends State<FileViewPage> {
 
+  List<Map<String, dynamic>> documents = [];
+
   @override
   void initState() {
     // TODO: implement initState
+    documents = widget.documents;
     super.initState();
   }
+
+  //GETS DOCUMENTS AFTER WE UPLOAD NEW ONE
+  Future<void> getDocumentsAfterUpload() async {
+    String fileTypeDecider = widget.title == "Özlük Dosyaları" ? "personel" : widget.title == "Beyannameler" ? "decleration" : "insurance";
+    var compDetails = await DatabaseHelper().getCompanyDetails(widget.companyId);
+    List<Map<String, dynamic>> docs = [];
+    LoadingIndicator(context).showLoading();
+    List<String> fileIds = compDetails!["companyFiles"].toString() != ""
+        ? compDetails["companyFiles"].toString().split(",")
+        : [];
+    for (String file in fileIds) {
+      Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
+      if (fileMap != null && fileMap["fileType"] == fileTypeDecider) {
+        docs.add(fileMap);
+      }
+    }
+    documents = docs;
+    setState(() {
+    });
+    Navigator.pop(context);
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +73,7 @@ class _FileViewPageState extends State<FileViewPage> {
         .of(context)
         .size
         .width;
-    bool isMobile = width < 800;
+    bool isMobile = width < 800;  //GET SCREEN WIDTH AND CHECK IS MOBILE LAYOUT
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +85,7 @@ class _FileViewPageState extends State<FileViewPage> {
         backgroundColor: const Color(0xFF080F2B),
         leading: IconButton(onPressed: (){
           Navigator.pop(context);
-        }, icon: Icon(Icons.arrow_back), color: Colors.white,),
+        }, icon: const Icon(Icons.arrow_back), color: Colors.white,),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -74,7 +100,7 @@ class _FileViewPageState extends State<FileViewPage> {
               ),
               delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                  final doc = widget.documents[index];
+                  final doc = documents[index];
                   return FileCard(
                     gradient1: const Color(0xFF474878),
                     gradient2: const Color(0xFF325477),
@@ -93,7 +119,7 @@ class _FileViewPageState extends State<FileViewPage> {
                     },
                   );
                 },
-                childCount: widget.documents.length,
+                childCount: documents.length,
               ),
             ),
           ],
@@ -104,12 +130,13 @@ class _FileViewPageState extends State<FileViewPage> {
         onPressed: (){
           showUploadFileModalBottomSheet(context);
         },
-        backgroundColor: Color(0xFF080F2B),
-        child: Icon(Icons.add, color: Colors.white,),
+        backgroundColor: const Color(0xFF080F2B),
+        child: const Icon(Icons.add, color: Colors.white,),
       ),
     );
   }
 
+  //FILE UPLOAD MODAL - UPLOAD, NAME AND SAVE
   Future<void> showUploadFileModalBottomSheet(BuildContext context) async {
     File? selectedFile;
     String fileName = '';
@@ -120,8 +147,8 @@ class _FileViewPageState extends State<FileViewPage> {
 
     await showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Modal'ın tam ekran olmasını sağlar
-      shape: RoundedRectangleBorder(
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
       builder: (BuildContext context) {
@@ -156,7 +183,7 @@ class _FileViewPageState extends State<FileViewPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    const Text(
                       'Dosya Yükle',
                       style: TextStyle(
                         fontSize: 20,
@@ -164,29 +191,29 @@ class _FileViewPageState extends State<FileViewPage> {
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: pickFile,
-                      icon: Icon(Icons.upload_file),
-                      label: Text('Dosya Seç'),
+                      icon: const Icon(Icons.upload_file),
+                      label: const Text('Dosya Seç'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF080F2B),
-                        minimumSize: Size(double.infinity, 50),
+                        backgroundColor: const Color(0xFF080F2B),
+                        minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     if (selectedFile != null) ...[
                       Text(
                         'Seçilen Dosya: ${selectedFile!.path.split('/').last}',
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         children: [
                           Expanded(
                             child: TextField(
                               controller: _nameController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Dosya İsmi',
                                 border: OutlineInputBorder(),
                               ),
@@ -197,14 +224,14 @@ class _FileViewPageState extends State<FileViewPage> {
                               },
                             ),
                           ),
-                          SizedBox(width: 2,),
-                          Text("."),
-                          SizedBox(width: 2,),
+                          const SizedBox(width: 2,),
+                          const Text("."),
+                          const SizedBox(width: 2,),
                           Expanded(
                             child: TextField(
                               controller: _executeController,
                               readOnly: true,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Uzantı',
                                 border: OutlineInputBorder(),
                               ),
@@ -217,16 +244,16 @@ class _FileViewPageState extends State<FileViewPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                     ],
                     TextField(
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Dosya Şifresi (Opsiyonel)',
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                         suffixIcon: _passwordController.text.isNotEmpty
                             ? IconButton(
-                          icon: Icon(Icons.clear),
+                          icon: const Icon(Icons.clear),
                           onPressed: () {
                             setState(() {
                               _passwordController.clear();
@@ -243,10 +270,12 @@ class _FileViewPageState extends State<FileViewPage> {
                         });
                       },
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: selectedFile != null
                           ? () async {
+
+                        //UPLOAD FILE AND SET IT TO ACCOUNTANT'S AND CLIENT'S FILES
                         LoadingIndicator(context).showLoading();
                         String fileType = widget.title == "Özlük Dosyaları" ? "personel" : widget.title == "Beyannameler" ? "decleration" : "insurance";
                         var file = await selectedFile!.readAsBytes();
@@ -265,18 +294,19 @@ class _FileViewPageState extends State<FileViewPage> {
                         adminFiles.add(f);
                         await DatabaseHelper().updateCompanyFiles(widget.companyId, companyFiles.join(","));
                         await DatabaseHelper().updateAdminFiles(widget.companyAdmin, adminFiles.join(","));
+                        getDocumentsAfterUpload();
                         print(f);
                         Navigator.pop(context);
                         Navigator.pop(context);
                       }
                           : null,
-                      child: Text('Karşıya Yükle'),
+                      child: const Text('Karşıya Yükle'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF080F2B),
-                        minimumSize: Size(double.infinity, 50),
+                        backgroundColor: const Color(0xFF080F2B),
+                        minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 ),
               );
@@ -287,15 +317,8 @@ class _FileViewPageState extends State<FileViewPage> {
     );
   }
 
+  //SHOW FILE INFO
   void showInfo(Map<String, dynamic> document) {
-    ///
-    ///         "fileName" : "bos_sigorta.pdf",
-    //         "filePath" : "/data/user/0/com.westsoftpro.direct_accounting/cache/file_picker/1732566649157/bos_sigorta.pdf",
-    //         "fileCreated" : DateTime.now().add(Duration(days: -3)),
-    //         "fileDownloaded" : DateTime.now,
-    //         "fileOwnerClient" : "ABK LTD.",
-    //         "fileUploadedBy" : "Admin"
-
     Map<String, String> fileTypeMap = {"decleration": "Beyanname", "personel" : "Özlük", "insurance" : "Sigorta"};
     showDialog(
       context: context,
@@ -318,34 +341,125 @@ class _FileViewPageState extends State<FileViewPage> {
     );
   }
 
+  //DOWNLOAD THE FILE
   void downloadFile(Map<String, dynamic> document) async {
-    final uri = Uri.parse(document["filePath"]);
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-
-  Future<void> shareFile(Map<String, dynamic> document) async{
-    String fileUrl = document["filePath"] ?? "";
-    if (fileUrl.isEmpty) {
-      print("Dosya yolu bulunamadı.");
-      return;
+    TextEditingController passController = TextEditingController();
+    bool canEnter = false;
+    if (document["filePassword"] != "") {
+      await showDialog(
+        context: context,
+        builder: (context) =>
+            AlertDialog(
+              title: const Text('Dosya Şifresini Girin:'),
+              content: TextFormField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Dosya Şifresi',),
+                obscureText: true,
+                controller: passController,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('İptal'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (passController.text == document["filePassword"]) {
+                      canEnter = true;
+                      Navigator.pop(context);
+                    }
+                    else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Şifre Yanlış")),
+                      );
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Onayla'),
+                ),
+              ],
+            ),
+      );
     }
-    String savePath = "";
-    try {
-      Directory? appDocDir = await getDownloadsDirectory();
-      String fileName = fileUrl.split('/').last;
-      savePath = "${appDocDir!.path}/$fileName";
-      Dio dio = Dio();
-      // Dosyayı indir
-      await dio.download(fileUrl, savePath);
-
-      print("Dosya indirildi: $savePath");
-
-    } catch (e) {
-      print("Dosya indirilemedi: $e");
-    }    Share.shareXFiles([XFile(savePath)], text: document["fileName"]);
+    else {
+      canEnter = true;
+    }
+    if (canEnter) {
+      final uri = Uri.parse(document["filePath"]);
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
+  //SHARE FILE
+  Future<void> shareFile(Map<String, dynamic> document) async{
+    TextEditingController passController = TextEditingController();
+    bool canEnter = false;
+    if(document["filePassword"] != ""){
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Dosya Şifresini Girin:'),
+          content: TextFormField(
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Dosya Şifresi',),
+            obscureText: true,
+            controller: passController,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('İptal'),
+            ),
+            TextButton(
+              onPressed: () {
+                if(passController.text == document["filePassword"]){
+                  canEnter = true;
+                  Navigator.pop(context);
+                }
+                else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Şifre Yanlış")),
+                  );
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Onayla'),
+            ),
+          ],
+        ),
+      );
+    }
+    else{
+      canEnter = true;
+    }
+    print(canEnter);
+    if(canEnter) {
+      String fileUrl = document["filePath"] ?? "";
+      if (fileUrl.isEmpty) {
+        print("Dosya yolu bulunamadı.");
+        return;
+      }
+      String savePath = "";
+      try {
+        Directory? appDocDir = await getDownloadsDirectory();
+        String fileName = fileUrl
+            .split('/')
+            .last;
+        savePath = "${appDocDir!.path}/$fileName";
+        Dio dio = Dio();
+        await dio.download(fileUrl, savePath);
+
+        print("Dosya indirildi: $savePath");
+      } catch (e) {
+        print("Dosya indirilemedi: $e");
+      }
+      Share.shareXFiles([XFile(savePath)], text: document["fileName"]);
+    }
+  }
+
+  //DATETIME FORMATTER FOR BETTER STRINGS
   String formatDateTime(dynamic value) {
     if (value is DateTime) {
       return "${value.day.toString().padLeft(2, '0')}.${value.month.toString().padLeft(2, '0')}.${value.year} - ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}";

@@ -3,16 +3,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
 
+
+/// THE WIDGET FOR EACH FILE THAT SHOWN IN FILE VIEW PAGE
 class FileCard extends StatelessWidget {
-  final Color gradient1;
-  final Color gradient2;
-  final Color buttonColor;
-  final Color iconColor;
-  final String filePath;
-  final String imagePath;
-  final Function showInfo;
-  final Function downloadFile;
-  final Function shareFile;
+  final Color gradient1; //Card Gradient's 1st Color
+  final Color gradient2; //Card Gradient's 2nd Color
+  final Color buttonColor; // Card Buttons' Color
+  final Color iconColor; // Card Buttons' Icons' Color
+  final String filePath; // Files' Path On The Server
+  final String imagePath; // File Type Image Path In Assets
+  final Function showInfo; // Show File Info Function
+  final Function downloadFile; // Download File Function
+  final Function shareFile; // Share File Function
 
   const FileCard({
     required this.gradient1,
@@ -26,11 +28,10 @@ class FileCard extends StatelessWidget {
     required this.shareFile,
   });
 
-  // Dosya türünü dosya yoluna göre belirleyelim
+  // Define the file type
   String getFileType(String p_path) {
     File file = File(p_path);
     String? mimeType = lookupMimeType(file.path);
-    print(mimeType);
     if (mimeType == 'application/pdf') {
       return "PDF";
     } else if (mimeType == 'application/vnd.ms-excel' || mimeType == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
@@ -38,7 +39,7 @@ class FileCard extends StatelessWidget {
     } else if (mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
       return "WORD";
     } else {
-      return "UNKNOWN"; // Türü bilinmeyen dosyalar
+      return "UNKNOWN"; // UNKNOWN TYPES (SUPPORTED TYPES ARE EXPANDABLE)
     }
   }
 
@@ -61,31 +62,25 @@ class FileCard extends StatelessWidget {
         height: 100,
         child: Row(
           children: [
-            // Resim kısmı solda olacak
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Image.asset(imagePath, width: 50, height: 50),
-                const SizedBox(
-                    height: 5), // Resim ile metin arasına 5px boşluk ekliyoruz
+                const SizedBox(height: 5),
                 Text(getFileType(filePath), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
               ],
             ),
-            const SizedBox(
-                width: 10), // Resim ile metin arasına boşluk ekliyoruz
-            // Diğer içerik kısmı sağda olacak
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment:
-                    CrossAxisAlignment.center, // Column içeriği ortalanacak
+                    CrossAxisAlignment.center,
                 children: [
-                  // Dosya adının son kısmını gösteren metin
                   Text(
                     filePath.split('/').last,
-                    textAlign: TextAlign.center, // Text ortalanacak
+                    textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
-                  const SizedBox(
-                      height: 10), // Text ile butonlar arasında boşluk
+                  const SizedBox(height: 10),
                   // Butonlar
                   Row(
                     mainAxisAlignment:

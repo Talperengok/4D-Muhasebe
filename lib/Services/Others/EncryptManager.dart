@@ -1,4 +1,4 @@
-import 'dart:convert';
+/*import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 class EncryptManager {
@@ -19,3 +19,6 @@ class EncryptManager {
     return decrypted;
   }
 }
+
+NOT USING NOW
+ */

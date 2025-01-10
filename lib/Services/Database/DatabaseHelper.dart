@@ -4,10 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 class DatabaseHelper {
-  // Bu URL, Back 0 tamamlandıktan sonra atanacaktır.
-  String ROOT = "http://188.245.203.49/api.php";
+  String ROOT = "http://188.245.203.49/api.php"; //ROOT URL
 
-  // İngilizce karaktere çevirme fonksiyonu
+  //CHANGE TURKISH CHARS TO ENGLISH ONES
   String _toEnglishChar(String input) {
     return input
         .replaceAll('İ', 'I')
@@ -24,6 +23,7 @@ class DatabaseHelper {
         .replaceAll('Ğ', 'G');
   }
 
+  //GENERATE RANDOMIZED UID
   String generateUID(String value) {
     String eng = _toEnglishChar(value);
     List<String> words = eng.split(" ");
@@ -36,15 +36,16 @@ class DatabaseHelper {
       }
     }
 
-    // 9 haneli rastgele sayı üret
     final random = Random();
-    int number = random.nextInt(999999999); // 0-999999999 arası
+    int number = random.nextInt(999999999);
     String numberStr = number.toString().padLeft(9, '0');
 
     return prefix + numberStr;
   }
 
   //------------------ ADMINS ------------------//
+
+  //CREATE ACCOUNTANT ACCOUNT
   Future<String> createAdmin(String adminID, String adminName, String adminCompanies, String adminExpiryDate, String adminPassword, String adminFiles, String adminMessages) async {
     String uid = generateUID(adminName);
     var map = <String, dynamic>{
@@ -62,6 +63,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //GET ACCOUNTANT DETAILS
   Future<String> updateAdminDetails(String adminID, String adminName, String adminPassword) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_ADMIN_DETAILS',
@@ -73,6 +75,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //UPDATE IS ACCOUNTANT ACCOUNT VISIBLE
   Future<String> updateAdminConfirmed(String adminID, bool confirmed) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_ADMIN_CONFIRMED',
@@ -83,6 +86,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //UPDATE ACCOUNTANT CLIENTS
   Future<String> updateAdminCompanies(String adminID, String adminCompanies) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_ADMIN_COMPANIES',
@@ -93,6 +97,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //UPDATE ACCOUNTANT FILES
   Future<String> updateAdminFiles(String adminID, String adminFiles) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_ADMIN_FILES',
@@ -103,6 +108,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //UPDATE ACCOUNTANT MESSAGES
   Future<String> updateAdminMessages(String adminID, String adminMessages) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_ADMIN_MESSAGES',
@@ -113,6 +119,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //UPDATE ACCOUNTANT SUBSCRIPTION EXPIRY DATE
   Future<String> updateAdminExpiryDate(String adminID, String adminExpiryDate) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_ADMIN_EXPIRYDATE',
@@ -123,6 +130,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  // GET ALL ACCOUNTANTS
   Future<List<Map<String, dynamic>>> getAdmins() async {
     var map = <String, dynamic>{ 'action': 'GET_ADMINS' };
     var response = await http.post(Uri.parse(ROOT), body: map);
@@ -130,30 +138,23 @@ class DatabaseHelper {
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
 
-      // Eğer data bir Map ise, hata ya da beklenmeyen format olabilir.
       if (data is Map<String, dynamic>) {
-        // Burada error veya başka bir durum kontrol edebilirsiniz.
         if (data.containsKey('error')) {
-          // Hata durumunda boş liste döndürebilirsiniz veya hata fırlatabilirsiniz.
           return [];
         } else {
-          // Beklenmedik bir map verisi. Kontrol etmek lazım.
           return [];
         }
       } else if (data is List) {
-        // Beklenen durum: data bir liste
         return data.map((e) => e as Map<String, dynamic>).toList();
       } else {
-        // Beklenmedik durum
         return [];
       }
     } else {
-      // HTTP hatası
       return [];
     }
   }
 
-
+  //GET SPECIFIC ACCOUNTANT DETAILS
   Future<Map<String, dynamic>?> getAdminDetails(String adminID) async {
     var map = <String, dynamic>{
       'action': 'GET_ADMIN_DETAILS',
@@ -171,6 +172,7 @@ class DatabaseHelper {
   }
 
   //------------------ COMPANIES ------------------//
+  //CREATE CLIENT ACCOUNT
   Future<String> createCompany(String uid, String companyName, String companyAdmin, String companyMessage, String companyPassword, String companyFiles) async {
     var map = <String, dynamic>{
       'action': 'CREATE_COMPANY',
@@ -185,6 +187,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //UPDATE CLIENT DETAILS
   Future<String> updateCompanyDetails(String companyID, String companyName, String companyPassword) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_COMPANY_DETAILS',
@@ -196,6 +199,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //UPDATE CLIENT'S ADMIN
   Future<String> updateCompanyAdmin(String companyID, String companyAdmin) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_COMPANY_ADMIN',
@@ -206,6 +210,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //UPDATE CLIENT FILES
   Future<String> updateCompanyFiles(String companyID, String companyFiles) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_COMPANY_FILES',
@@ -216,6 +221,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  // UPDATE CLIENT MESSAGE
   Future<String> updateCompanyMessage(String companyID, String companyMessage) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_COMPANY_MESSAGE',
@@ -226,6 +232,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //GET ALL CLIENTS
   Future<List<Map<String, dynamic>>> getCompanies() async {
     var map = <String, dynamic>{
       'action': 'GET_COMPANIES',
@@ -239,6 +246,7 @@ class DatabaseHelper {
     }
   }
 
+  //GET SPECIFIC CLIENT DETAILS
   Future<Map<String, dynamic>?> getCompanyDetails(String companyID) async {
     var map = <String, dynamic>{
       'action': 'GET_COMPANY_DETAILS',
@@ -257,9 +265,9 @@ class DatabaseHelper {
 
   //------------------ FILES ------------------//
   // CREATE_FILE dosya upload ettiği için normal bir POST'tan farklı olacaktır.
-  // Ancak Back0'da bu işlemin POST ile gerçekleştiği belirtildi.
   // Burada http paketini kullanırken multipart istek yapmamız gerekebilir.
 
+  //UPLOAD FILE AND ADD TO ITS ACCOUNTANT AND CLIENT
   Future<String> createFile(
       String fileName,
       String fileType,
@@ -302,7 +310,7 @@ class DatabaseHelper {
     }
   }
 
-
+  //UPDATE FILE DETAILS
   Future<String> updateFileDetails(String fileID, String fileName, String fileType, String filePassword, String fileOwners) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_FILE_DETAILS',
@@ -316,6 +324,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //DELETE THE GIVEN FILE
   Future<String> deleteFile(String fileID) async {
     var map = <String, dynamic>{
       'action': 'DELETE_FILE',
@@ -325,6 +334,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //GET ALL FILES
   Future<List<Map<String, dynamic>>> getFiles(String fileOwner) async {
     var map = <String, dynamic>{
       'action': 'GET_FILES',
@@ -339,6 +349,7 @@ class DatabaseHelper {
     }
   }
 
+  // GET SPECIFIC FILE DETAILS
   Future<Map<String, dynamic>> getFile(String fileID) async {
     var map = <String, dynamic>{
       'action': 'GET_FILE',
@@ -356,6 +367,8 @@ class DatabaseHelper {
   }
 
   //------------------ MESSAGES ------------------//
+
+  //CREATE CHAT ROOM BETWEEN CLIENT AND ACCOUNTANT
   Future<String> createConversation(String messageCompany, String messageAdmin, String messageList) async {
     String uid = generateUID(messageCompany);
     var map = <String, dynamic>{
@@ -369,6 +382,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? uid : 'error';
   }
 
+  //UPDATE MESSAGES OF CHAT ROOM
   Future<String> updateConversationMessages(String messageUID, String messageList) async {
     var map = <String, dynamic>{
       'action': 'UPDATE_CONVERSATION_MESSAGES',
@@ -379,6 +393,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
+  //DELETE CHAT ROOM
   Future<String> deleteConversation(String messageUID) async {
     var map = <String, dynamic>{
       'action': 'DELETE_CONVERSATION',
@@ -388,7 +403,7 @@ class DatabaseHelper {
     return response.statusCode == 200 ? response.body : 'error';
   }
 
-
+  //GET ALL CHAT ROOMS
   Future<List<Map<String, dynamic>>> getMessages() async {
     var map = <String, dynamic>{
       'action': 'GET_MESSAGES',
@@ -402,6 +417,7 @@ class DatabaseHelper {
     }
   }
 
+  //GET SPECIFIC CHAT ROOM
   Future<Map<String, dynamic>> getMessage(String messageID) async {
     var map = <String, dynamic>{
       'action': 'GET_MESSAGE_DETAILS',
@@ -420,6 +436,7 @@ class DatabaseHelper {
 
 
   //------------------ AUTHENTICATE_USER ------------------//
+  //CHECKS USER CREDENTIALS
   Future<bool> authenticateUser(String type, String id, String password) async {
     var map = <String, dynamic>{
       'action': 'AUTHENTICATE_USER',
@@ -430,7 +447,6 @@ class DatabaseHelper {
     var response = await http.post(Uri.parse(ROOT), body: map);
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       var data = jsonDecode(response.body);
-      // {"status":"true"} veya {"status":"false"} dönecek
       if (data is Map && data.containsKey('status')) {
         return data['status'] == 'true';
       }

@@ -1,28 +1,27 @@
-import 'dart:convert';
-
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../Components/CompanyCard.dart';
 import '../User/main_menu.dart';
-import 'package:intl/intl.dart';
-import '../../Services/Database/DatabaseHelper.dart'; // Doğru yolu belirleyin
+import '../../Services/Database/DatabaseHelper.dart';
+
+///PAGE THAT ACCOUNTANTS SEE THEIR CLIENTS (MAIN PAGE FOR ACCOUNTANT)
 
 class AdminCompaniesPage extends StatefulWidget {
-  final String adminID;
+  final String adminID; //Who is viewing the page?
 
-  const AdminCompaniesPage({Key? key, required this.adminID}) : super(key: key);
+  const AdminCompaniesPage({super.key, required this.adminID});
 
   @override
   State<AdminCompaniesPage> createState() => _AdminCompaniesPageState();
 }
 
 class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
-  final DatabaseHelper dbHelper = DatabaseHelper();
+  final DatabaseHelper dbHelper = DatabaseHelper(); // Defined DatabaseHelper class to do backend operations.
 
-  Map<String, dynamic> adminData = {};
-  List<Map<String, dynamic>> companies = [];
-  bool loading = false;
+  Map<String, dynamic> adminData = {}; //Current viewer accountant's data
+  List<Map<String, dynamic>> companies = []; //Accountant's clients
+  bool loading = false; //Is Data Loading?
 
   @override
   void initState() {
@@ -30,17 +29,16 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     getAdminData();
   }
 
+  //Function to get Admin Data
   Future<void> getAdminData() async {
     try {
       setState(() {
         loading = true;
       });
-      // Admin detaylarını al
       final adminDetails = await dbHelper.getAdminDetails(widget.adminID);
-
       if (adminDetails == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Admin bulunamadı")),
+          const SnackBar(content: Text("Admin bulunamadı")),
         );
         setState(() {
           loading = false;
@@ -48,10 +46,8 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
         return;
       }
 
-      // Şirket kayıtlarını al
+      //Get clients and select the ones connected with viewer accountant.
       final allCompanies = await dbHelper.getCompanies();
-
-      // Admin'e atanmış şirketleri filtrele
       List<Map<String, dynamic>> filteredCompanies = allCompanies
           .where((company) =>
       company['companyAdmin'] == widget.adminID)
@@ -63,10 +59,9 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
         loading = false;
       });
     } catch (e) {
-      // Hata durumunda işlem
       print("Error fetching admin data: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Admin verileri alınırken hata oluştu")),
+        const SnackBar(content: Text("Admin verileri alınırken hata oluştu")),
       );
       setState(() {
         loading = false;
@@ -74,12 +69,12 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     }
   }
 
-  // Şirket detaylarını göster
+  // Show client details
   void showDetails(Map<String, dynamic> company) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Müvekkil Detayları"),
+        title: const Text("Müvekkil Detayları"),
         content: Column(
           children: [
             Text("İsim: ${company["companyName"]}"),
@@ -96,6 +91,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     );
   }
 
+  // Redirect to client's File View
   void showFiles(Map<String, dynamic> company) {
     Navigator.push(
       context,
@@ -107,7 +103,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     );
   }
 
-  // Mesaj gönder
+  // Message to client - Redirects Chat Page
   void sendMessage(String companyID) {
     Navigator.push(
       context,
@@ -117,23 +113,23 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     );
   }
 
-  // Şirket oluşturma dialogunu aç
+  // Create Client Dialog
   void openCreateCompanyDialog() {
     showDialog(
       context: context,
       builder: (context) {
-        return StatefulBuilder( // StatefulBuilder kullanarak dialog içinde setState yapabiliriz
+        return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text("Müvekkil Ekle"),
-              content: Text('Müvekkil ekleyebilmek için aşağıdaki "Muhasebeci Bilgilerini Kopyala" butonuna tıklayın'
+              title: const Text("Müvekkil Ekle"),
+              content: const Text('Müvekkil ekleyebilmek için aşağıdaki "Muhasebeci Bilgilerini Kopyala" butonuna tıklayın'
                   ' ve kopyalanan bilgileri müvekkilinize iletip, o bilgilerle uygulamaya kayıt olmasını isteyin.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text("İptal"),
+                  child: const Text("İptal"),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -142,9 +138,9 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
                         "kayıt olunuz:\n\nMuhasebeci Sicil No: ${adminData["adminID"]}\nMuhasebeci Benzersiz Kimlik: ${adminData["UID"]}";
                     Clipboard.setData(ClipboardData(text: mess));
                   },
-                  child: Text("Muhasebeci Bilgilerini Kopyala"),
+                  child: const Text("Muhasebeci Bilgilerini Kopyala"),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF080F2B),
+                    backgroundColor: const Color(0xFF080F2B),
                   ),
                 ),
               ],
@@ -155,7 +151,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     );
   }
 
-  // Şirket silme fonksiyonu
+  // Delete Client Function - Not effective yet
  /* Future<void> deleteCompany(String companyID) async {
     var map = <String, dynamic>{
       'action': 'DELETE_COMPANY',
@@ -184,8 +180,6 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isMobile = MediaQuery.of(context).size.width < 800;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -193,13 +187,13 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF080F2B),
       ),
-      backgroundColor: Color(0xFF908EC0),
-      body: loading
-          ? Center(child: CircularProgressIndicator())
+      backgroundColor: const Color(0xFF908EC0),
+      body: loading // Check if data is loading, then return widget by company count
+          ? const Center(child: CircularProgressIndicator())
           : companies.isEmpty
-          ? Center(
+          ? const Center(
         child: Text(
           "Hiç şirket eklenmemiş",
           style: TextStyle(color: Colors.white, fontSize: 18),
@@ -212,12 +206,12 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 10,),
+                const SizedBox(height: 10,),
                 CompanyCard(
                   companyData: company,
-                  gradient1: Color(0xFF474878),
-                  gradient2: Color(0xFF325477),
-                  buttonColor: Color(0xFF080F2B),
+                  gradient1: const Color(0xFF474878),
+                  gradient2: const Color(0xFF325477),
+                  buttonColor: const Color(0xFF080F2B),
                   iconColor: Colors.white,
                   showDetails: () => showDetails(company),
                   sendMessage: () => sendMessage(company['companyID'].toString()),
@@ -230,8 +224,8 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: openCreateCompanyDialog,
-        backgroundColor: Color(0xFF080F2B),
-        child: Icon(Icons.add, color: Colors.white,),
+        backgroundColor: const Color(0xFF080F2B),
+        child: const Icon(Icons.add, color: Colors.white,),
       ),
     );
   }

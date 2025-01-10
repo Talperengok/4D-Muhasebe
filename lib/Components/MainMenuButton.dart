@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
+///BUTTONS THAT SHOWN IN THE MAIN MENU PAGE (2nd Page for Accountants, Main Page for Clients)
 
 class MainMenuButton extends StatelessWidget {
-  final Color gradient1;
-  final Color gradient2;
-  final double height;
-  final double width;
-  final String title;
-  final String informerText;
-  final String imagePath;
-  final Function onPressed;
+  final Color gradient1; //Button Gradient's 1st Color
+  final Color gradient2; //Button Gradient's 2nd Color
+  final double height; //Button Height
+  final double width; //Button Width
+  final String title; //Button Title
+  final String informerText; //Button Informer
+  final String imagePath; //Button's Icon Path In Assets
+  final Function onPressed; // What will be when press button?
 
   const MainMenuButton({
-    Key? key,
+    super.key,
     required this.gradient1,
     required this.gradient2,
     required this.height,
@@ -21,7 +22,7 @@ class MainMenuButton extends StatelessWidget {
     required this.informerText,
     required this.imagePath,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +31,14 @@ class MainMenuButton extends StatelessWidget {
       child: Container(
         height: height,
         width: width,
-        margin: const EdgeInsets.symmetric(vertical: 8), // Dikey boşluk
+        margin: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [gradient1, gradient2, gradient1],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
-          borderRadius: BorderRadius.circular(20), // Görseldeki gibi köşeler yuvarlatılmış
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -50,13 +51,12 @@ class MainMenuButton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // Ortadaki Image ve Text Row
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
                   imagePath,
-                  height: height * 0.6, // Butonun %40'ı kadar boyut
+                  height: height * 0.6,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(width: 16),
@@ -70,7 +70,6 @@ class MainMenuButton extends StatelessWidget {
                 ),
               ],
             ),
-            // Alttaki açıklama Text
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
