@@ -1,4 +1,5 @@
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
+import 'package:direct_accounting/Pages/User/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../Components/CompanyCard.dart';
@@ -183,11 +184,30 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Direkt Muhasebe - Muhasebeci',
+          'DM - Muhasebeci Paneli',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF080F2B),
+        leading: IconButton(
+          onPressed: (){
+            getAdminData();
+          },
+          icon: Icon(Icons.settings_backup_restore, color: Colors.white,),
+        ),
+        actions: [
+          IconButton(
+            onPressed: (){
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) =>
+                    LoginPage()
+                ),
+              );
+            },
+            icon: Icon(Icons.logout, color: Colors.red,),
+          )
+        ],
       ),
       backgroundColor: const Color(0xFF908EC0),
       body: loading // Check if data is loading, then return widget by company count

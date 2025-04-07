@@ -1,5 +1,6 @@
 import 'package:direct_accounting/Components/CustomDrawer.dart';
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
+import 'package:direct_accounting/Pages/User/TaxCalculator.dart';
 import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -139,7 +140,12 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
           );
         },
         onButton2Pressed: (){
-
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) =>
+                TaxCalculationPage(companyId: widget.companyID,)
+            ),
+          );
         },
         onButton3Pressed: () async {
           Navigator.pushReplacement(

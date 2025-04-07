@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:direct_accounting/Components/CustomDrawer.dart';
 import 'package:direct_accounting/Components/FileCard.dart';
 import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
+import 'package:direct_accounting/Pages/User/TaxCalculator.dart';
 import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
@@ -67,12 +68,19 @@ class _ChatPageState extends State<ChatPage> {
   bool _loading = true;
   final TextEditingController _messageController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     fetchData();
     _startPolling();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo( _scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeOut, );
+    }
   }
 
   // Reload messages per 5 seconds
@@ -89,10 +97,11 @@ class _ChatPageState extends State<ChatPage> {
           companyData["companyMessage"]);
       String incomingJsonMessages = messageData["messageList"];
       List<Map<String, dynamic>> newMessages = jsonStringToMessageList(incomingJsonMessages);
-
-      if (!listEquals(_messages, newMessages)) {
+      print("New" + newMessages.length.toString() + "  ----- Old: " + _messages.length.toString());
+      if (newMessages.length > _messages.length) {
         setState(() {
           _messages = newMessages;
+          _scrollToBottom();
         });
       }
     } catch (e) {
@@ -132,7 +141,9 @@ class _ChatPageState extends State<ChatPage> {
         List<String> adMessageList = adminMessages.split(",");
         adMessageList.add(s);
         await DatabaseHelper().updateAdminMessages(widget.adminID, adMessageList.join(","));
+        companyData["companyMessage"] = s;
         _messages = jsonStringToMessageList(firstMessage);
+        _checkForNewMessages();
       }
     }
     //...If there were, get older messages
@@ -143,6 +154,7 @@ class _ChatPageState extends State<ChatPage> {
       _messages = jsonStringToMessageList(incomingJsonMessages);
     }
     setState(() {
+      _scrollToBottom();
       _loading = false;
     });
   }
@@ -324,15 +336,19 @@ class _ChatPageState extends State<ChatPage> {
   void _sendMessage() async {
     String newMessage = _messageController.text.trim();
     if (newMessage.isNotEmpty) {
-      setState(() {
-        _messages.add({
-          "sentDate": DateTime.now().toIso8601String(),
-          "sender": widget.currentUserID,
-          "message": newMessage,
-          "messageType": "text"
-        });
+      List<Map<String, dynamic>> messagesTemp = [];
+      for(int i = 0; i<_messages.length ; i++) {
+        messagesTemp.add(_messages[i]);
+      }
+      messagesTemp.add({
+        "sentDate": DateTime.now().toIso8601String(),
+        "sender": widget.currentUserID,
+        "message": newMessage,
+        "messageType": "text"
       });
-      await DatabaseHelper().updateConversationMessages(companyData["companyMessage"], messageListToJsonString(_messages));
+      await DatabaseHelper().updateConversationMessages(
+          companyData["companyMessage"], messageListToJsonString(messagesTemp));
+      _checkForNewMessages();
       setState(() {
         _messageController.clear();
       });
@@ -531,19 +547,23 @@ class _ChatPageState extends State<ChatPage> {
                         List<String> companyFiles = comFiles.split(",");
                         String admFiles = adminDetails!["adminFiles"];
                         List<String> adminFiles = admFiles.split(",");
-
                         companyFiles.add(f);
                         adminFiles.add(f);
                         await DatabaseHelper().updateCompanyFiles(widget.companyID, companyFiles.join(","));
                         await DatabaseHelper().updateAdminFiles(widget.adminID, adminFiles.join(","));
-                        _messages.add({
+                        List<Map<String, dynamic>> messagesTemp = [];
+                        for(int i = 0; i< _messages.length ; i++) {
+                          messagesTemp.add(_messages[i]);
+                        }
+                        messagesTemp.add({
                           "sentDate": DateTime.now().toIso8601String(),
                           "sender": widget.currentUserID,
                           "message": f,
                           "messageType": "file"
                         });
-                        await DatabaseHelper().updateConversationMessages(companyData["companyMessage"], messageListToJsonString(_messages));
-                        setState((){});
+                        print(_messages.length);
+                        await DatabaseHelper().updateConversationMessages(companyData["companyMessage"], messageListToJsonString(messagesTemp));
+                        await _checkForNewMessages();
                         Navigator.pop(context);
                         Navigator.pop(context);
                       }
@@ -597,7 +617,12 @@ class _ChatPageState extends State<ChatPage> {
             );
           },
           onButton2Pressed: (){
-
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  TaxCalculationPage(companyId: widget.companyID,)
+              ),
+            );
           },
           onButton3Pressed: () async {
             Navigator.pushReplacement(
@@ -622,6 +647,7 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               reverse: false,
               itemCount: _messages.length,
               itemBuilder: (context, index) {

@@ -1,3 +1,4 @@
+import 'package:direct_accounting/Pages/User/LoginPage.dart';
 import 'package:flutter/material.dart';
 
 ///THE DRAWER WIDGET OF CLIENT SECTION
@@ -43,12 +44,11 @@ class CustomDrawer extends StatelessWidget {
             title: Text('Ana Menü', style: TextStyle(color: page == 1 ? Colors.blueGrey : Colors.black),),
             onTap: page != 1 ? onButton1Pressed : null,
           ),
-          /*ListTile(
+          ListTile(
             leading: Icon(Icons.calculate, color: page == 2 ? Colors.blueGrey : Colors.black),
             title: Text('Hesaplamalar', style: TextStyle(color: page == 2 ? Colors.blueGrey : Colors.black),),
             onTap:  page != 2 ? onButton2Pressed : null,
           ),
-           */
           ListTile(
             leading: Icon(Icons.chat, color: page == 3 ? Colors.blueGrey : Colors.black),
             title: Text("Muhasebeci'yle Sohbet", style: TextStyle(color: page == 3 ? Colors.blueGrey : Colors.black),),
@@ -58,6 +58,18 @@ class CustomDrawer extends StatelessWidget {
             leading: Icon(Icons.settings, color: page == 4 ? Colors.blueGrey : Colors.black),
             title: Text('Ayarlar', style: TextStyle(color: page == 4 ? Colors.blueGrey : Colors.black),),
             onTap:  page != 4 ? onButton4Pressed : null,
+          ),
+          ListTile(
+            leading: Icon(Icons.logout, color: Colors.red),
+            title: Text('Çıkış Yap', style: TextStyle(color: Colors.red),),
+            onTap:  (){
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) =>
+                    LoginPage()
+                ),
+              );
+            },
           ),
         ],
       ),

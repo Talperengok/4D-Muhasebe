@@ -2,6 +2,7 @@ import 'package:direct_accounting/Components/CustomDrawer.dart';
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
 import 'package:direct_accounting/Pages/User/FileViewPage.dart';
+import 'package:direct_accounting/Pages/User/TaxCalculator.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -220,7 +221,12 @@ class _MainMenuState extends State<MainMenu> {
             );
           },
           onButton2Pressed: (){
-
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  TaxCalculationPage(companyId: widget.companyID,)
+              ),
+            );
           },
           onButton3Pressed: () async {
             Navigator.pushReplacement(
