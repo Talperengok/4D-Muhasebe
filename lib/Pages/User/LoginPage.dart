@@ -558,22 +558,48 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
-                    //CREATE ACCOUNT FOR NEW CLIENT
-                    if(passwordAgainController.text == passwordController.text){
-                      var acc = await DatabaseHelper().getAdminDetails(idController.text);
-                      if(acc != null && acc.isNotEmpty){
-                        String accUID = acc["UID"];
-                        if(accUID == uidController.text){
-                          await DatabaseHelper().createCompany(companyIdController.text, nameController.text, idController.text, "", passwordController.text, "");
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) =>
-                                MainMenu(currentUserId: companyIdController.text, isAdmin: false, companyID: companyIdController.text)
-                            ),
-                          );
-                        }
-                      }
+                    if (passwordAgainController.text != passwordController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Şifreler uyuşmuyor!"))
+                      );
+                      return;
                     }
+
+                    var acc = await DatabaseHelper().getAdminDetails(idController.text);
+                    if (acc == null || acc.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Muhasebeci bulunamadı!"))
+                      );
+                      return;
+                    }
+
+                    if (acc["UID"] != uidController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Muhasebeci kimliği uyuşmuyor!"))
+                      );
+                      return;
+                    }
+
+                    // Şartlar sağlandı, şirket hesabı oluştur
+                    await DatabaseHelper().createCompany(
+                      companyIdController.text,
+                      nameController.text,
+                      idController.text,
+                      "",
+                      passwordController.text,
+                      ""
+                    );
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MainMenu(
+                          currentUserId: companyIdController.text,
+                          isAdmin: false,
+                          companyID: companyIdController.text,
+                        ),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF080F2B),

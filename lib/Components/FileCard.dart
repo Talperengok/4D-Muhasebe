@@ -67,24 +67,37 @@ class FileCard extends StatelessWidget {
               children: [
                 Image.asset(imagePath, width: 50, height: 50),
                 const SizedBox(height: 5),
-                Text(getFileType(filePath), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
+                Text(
+                  getFileType(filePath),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                ),
               ],
             ),
             const SizedBox(width: 10),
+
+            /// Dosya adı ve butonlar
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    filePath.split('/').last,
-                    textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
-                  const SizedBox(height: 10),
-                  // Butonlar
+                  Tooltip(
+                    message: filePath.split('/').last,
+                    child: Text(
+                      filePath.split('/').last,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center, // Butonlar ortalanacak
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
