@@ -67,9 +67,9 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF080F2B),
       ),
-      backgroundColor: Color(0xFF908EC0),
+      backgroundColor: const Color(0xFF908EC0),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isMobile
@@ -78,7 +78,7 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
           children: [
             Expanded(
               child: loading
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
                 itemCount: admins.length,
                 itemBuilder: (context, index) {
@@ -90,15 +90,15 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
                         children: [
                           Row(
                             children: [
-                              Text("Sicil: ${admin['adminID']}", style: TextStyle(fontWeight: FontWeight.bold),),
-                              SizedBox(width: 5,),
+                              Text("Sicil: ${admin['adminID']}", style: const TextStyle(fontWeight: FontWeight.bold),),
+                              const SizedBox(width: 5,),
                               IconButton(
                                   onPressed: (){
                                     Clipboard.setData(ClipboardData(text: admin['adminID']));
                                   },
-                                  icon: Icon(Icons.copy)
+                                  icon: const Icon(Icons.copy)
                               ),
-                              SizedBox(width: 5,),
+                              const SizedBox(width: 5,),
                               IconButton(
                                   onPressed: () async {
                                     if(admin["confirmed"] == "YES"){
@@ -113,13 +113,13 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
                               )
                             ],
                           ),
-                          SizedBox(height: 2,),
+                          const SizedBox(height: 2,),
                           Text("İsim: ${admin['adminName']}"),
                         ],
                       ),
                       subtitle: Text("Üyelik Bitiş: ${admin['adminExpiryDate']}"),
                       trailing: IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () => deleteAdmin(admin['adminID'].toString()),
                       ),
                     ),
@@ -137,7 +137,7 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
               children: [
                 Expanded(
                   child: loading
-                      ? Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator())
                       : ListView.builder(
                     itemCount: admins.length,
                     itemBuilder: (context, index) {
@@ -148,23 +148,23 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
                             children: [
                               Row(
                                 children: [
-                                  Text("UID: ${admin['adminID']}", style: TextStyle(fontWeight: FontWeight.bold),),
-                                  SizedBox(width: 5,),
+                                  Text("UID: ${admin['adminID']}", style: const TextStyle(fontWeight: FontWeight.bold),),
+                                  const SizedBox(width: 5,),
                                   IconButton(
                                       onPressed: (){
                                         Clipboard.setData(ClipboardData(text: admin['adminID']));
                                       },
-                                      icon: Icon(Icons.copy)
+                                      icon: const Icon(Icons.copy)
                                   )
                                 ],
                               ),
-                              SizedBox(height: 2,),
+                              const SizedBox(height: 2,),
                               Text("Name: ${admin['adminName']}"),
                             ],
                           ),
                           subtitle: Text("Expiry: ${admin['adminExpiryDate']}"),
                           trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () => deleteAdmin(admin['adminID'].toString()),
                           ),
                         ),

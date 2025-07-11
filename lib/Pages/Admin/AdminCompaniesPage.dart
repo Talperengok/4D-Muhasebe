@@ -172,7 +172,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
 
       final fileID = document["fileID"];
       if (fileID == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Geçersiz dosya ID.")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Geçersiz dosya ID.")));
         Navigator.pop(context);
         return;
       }
@@ -183,7 +183,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       var admDetails = await DatabaseHelper().getAdminDetails(document["companyAdmin"]);
 
       if (compDetails == null || admDetails == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Kullanıcı bilgisi alınamadı.")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Kullanıcı bilgisi alınamadı.")));
         Navigator.pop(context);
         return;
       }
@@ -198,7 +198,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       await DatabaseHelper().updateAdminFiles(document["companyAdmin"], adminFiles.join(","));
 
       Navigator.pop(context); // loading kapat
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Dosya silindi.")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Dosya silindi.")));
 
       await getAdminData(); // ekranı yenile
     }
@@ -232,7 +232,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       final companyID = company["companyID"];
       if (companyID == null) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Geçersiz müvekkil ID.")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Geçersiz müvekkil ID.")));
         return;
       }
 
@@ -240,10 +240,10 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       Navigator.pop(context); // loading kapat
 
       if (result == "success") {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Müvekkil silindi.")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Müvekkil silindi.")));
         await getAdminData();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Silme işlemi başarısız.")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Silme işlemi başarısız.")));
       }
     }
   }

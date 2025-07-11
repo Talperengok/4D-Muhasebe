@@ -55,7 +55,7 @@ class _FileViewPageState extends State<FileViewPage> {
         : [];
     for (String file in fileIds) {
       Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
-      if (fileMap["fileType"] == fileTypeDecider) {
+      if (fileMap != null && fileMap["fileType"] == fileTypeDecider) {
         docs.add(fileMap);
       }
     }
