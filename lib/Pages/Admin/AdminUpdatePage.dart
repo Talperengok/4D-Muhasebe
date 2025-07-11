@@ -113,7 +113,16 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-      ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back), color: Colors.white,),
+        title: const Text('Muhasebeci Ayarları',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+          backgroundColor: const Color(0xFF080F2B),
+          centerTitle: true,
+        ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
