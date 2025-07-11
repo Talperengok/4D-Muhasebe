@@ -2,6 +2,7 @@ import 'package:direct_accounting/Components/CustomDrawer.dart';
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
 import 'package:direct_accounting/Pages/User/FileViewPage.dart';
+import 'package:direct_accounting/Pages/User/LoginPage.dart';
 import 'package:direct_accounting/Pages/User/TaxCalculator.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
@@ -61,7 +62,7 @@ class _MainMenuState extends State<MainMenu> {
         : [];
     for (String file in fileIds) {
       Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
-      if (fileMap != null && fileMap["fileType"] == "personel") {
+      if (fileMap["fileType"] == "personel") {
         docs.add(fileMap);
       }
     }
@@ -92,7 +93,7 @@ class _MainMenuState extends State<MainMenu> {
         : [];
     for (String file in fileIds) {
       Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
-      if (fileMap != null && fileMap["fileType"] == "decleration") {
+      if (fileMap["fileType"] == "decleration") {
         docs.add(fileMap);
       }
     }
@@ -123,7 +124,7 @@ class _MainMenuState extends State<MainMenu> {
         : [];
     for (String file in fileIds) {
       Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
-      if (fileMap != null && fileMap["fileType"] == "insurance") {
+      if (fileMap["fileType"] == "insurance") {
         docs.add(fileMap);
       }
     }
@@ -197,17 +198,17 @@ class _MainMenuState extends State<MainMenu> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
         centerTitle: true,
         actions: [
-          if(!widget.isAdmin)
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>
-                      ChatPage(currentUserID: widget.currentUserId, companyID: widget.companyID, adminID: teamInfo["companyAdmin"])
-                  ),
-                );
-              },
-              icon: Icon(Icons.chat), color: Colors.white,)
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => 
+                LoginPage()
+                ),
+              );
+            },
+            icon: const Icon(Icons.logout, color: Colors.red),
+          )
         ],
         backgroundColor: Color(0xFF080F2B),
       ),

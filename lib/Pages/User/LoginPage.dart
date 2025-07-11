@@ -357,37 +357,39 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () async {
-                    //CREATE ACCOUNT FOR NEW ACCOUNTANT
-
-                    if(passwordController.text == passwordAgainController.text) {
-                      await DatabaseHelper().createAdmin(
-                          idController.text,
-                          nameController.text,
-                          "",
-                          DateTime.now().add(Duration(days: 365)).toString(),
-                          passwordController.text,
-                          "",
-                          "");
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) =>
-                            AdminCompaniesPage(adminID: idController.text)
-                        ),
+                  onPressed: () async {  //CREATE ACCOUNT FOR NEW ACCOUNTANT
+                    if (passwordController.text != passwordAgainController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Şifreler uyuşmuyor!"))
                       );
+                      return;
                     }
+
+                    if (idController.text.isEmpty || nameController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Tüm alanları doldurun!"))
+                      );
+                      return;
+                    }
+
+                    await DatabaseHelper().createAdmin(
+                      idController.text,
+                      nameController.text,
+                      "",
+                      DateTime.now().add(Duration(days: 365)).toString(),
+                      passwordController.text,
+                      "",
+                      ""
+                    );
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) =>
+                          AdminCompaniesPage(adminID: idController.text)
+                      ),
+                    );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF080F2B),
-                  ),
-                  child: const Text(
-                    'Kayıt Ol',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: Text("Kayıt Ol"),
                 ),
                 TextButton(
                     onPressed: (){
@@ -557,7 +559,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () async {
+                  onPressed: () async {// CREATE ACCOUNT FOR NEW CLİENT
                     if (passwordAgainController.text != passwordController.text) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Şifreler uyuşmuyor!"))

@@ -11,6 +11,7 @@ class CompanyCard extends StatelessWidget {
   final Function showDetails; //Function That Showing Company Info
   final Function sendMessage; //Function That Redirects Accountant to Chat Page with Company
   final Function showFiles; //Function That Redirects Accountant to File View Page of Company
+  final Function deleteClient; //Function That Deletes the Client
 
   const CompanyCard({
     required this.companyData,
@@ -21,6 +22,7 @@ class CompanyCard extends StatelessWidget {
     required this.showDetails,
     required this.sendMessage,
     required this.showFiles,
+    required this.deleteClient,
     super.key,
   });
 
@@ -92,6 +94,16 @@ class CompanyCard extends StatelessWidget {
                   ),
                   onPressed: () => showFiles(),
                   child: Icon(Icons.folder, color: iconColor),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonColor,
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(10),
+                  ),
+                  onPressed: () => deleteClient(),
+                  child: Icon(Icons.delete, color: Colors.white),
                 ),
               ],
             ),

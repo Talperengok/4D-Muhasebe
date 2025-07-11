@@ -15,6 +15,7 @@ class FileCard extends StatelessWidget {
   final Function showInfo; // Show File Info Function
   final Function downloadFile; // Download File Function
   final Function shareFile; // Share File Function
+  final VoidCallback? deleteFile;// Delete File Function (Optional)
 
   const FileCard({
     required this.gradient1,
@@ -26,22 +27,39 @@ class FileCard extends StatelessWidget {
     required this.showInfo,
     required this.downloadFile,
     required this.shareFile,
+    this.deleteFile,
   });
 
   // Define the file type
   String getFileType(String p_path) {
-    File file = File(p_path);
-    String? mimeType = lookupMimeType(file.path);
-    if (mimeType == 'application/pdf') {
+  File file = File(p_path);
+  String? mimeType = lookupMimeType(file.path);
+
+  switch (mimeType) {
+    case 'application/pdf':
       return "PDF";
-    } else if (mimeType == 'application/vnd.ms-excel' || mimeType == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-      return "EXCEL";
-    } else if (mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    case 'application/msword':
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
       return "WORD";
-    } else {
-      return "UNKNOWN"; // UNKNOWN TYPES (SUPPORTED TYPES ARE EXPANDABLE)
-    }
+    case 'application/vnd.ms-excel':
+    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+      return "EXCEL";
+    case 'image/png':
+      return "PNG";
+    case 'image/jpeg':
+      return "JPEG";
+    case 'image/jpg':
+      return "JPG";
+    case 'text/plain':
+      return "TXT";
+    case 'application/zip':
+      return "ZIP";
+    case 'application/x-rar-compressed':
+      return "RAR";
+    default:
+      return mimeType?.toUpperCase().split("/").last ?? "UNKNOWN";
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +124,7 @@ class FileCard extends StatelessWidget {
                         onPressed: () => showInfo(),
                         child: Icon(Icons.info, color: iconColor),
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 6),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
@@ -114,7 +132,7 @@ class FileCard extends StatelessWidget {
                         onPressed: () => downloadFile(),
                         child: Icon(Icons.download, color: iconColor),
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 6),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
@@ -122,6 +140,16 @@ class FileCard extends StatelessWidget {
                         onPressed: () => shareFile(),
                         child: Icon(Icons.share, color: iconColor),
                       ),
+                      if (deleteFile != null) ...[
+                        const SizedBox(width: 6),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: buttonColor,
+                          ),
+                          onPressed: deleteFile,
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                      ],
                     ],
                   ),
                 ],

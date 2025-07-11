@@ -1,4 +1,3 @@
-import 'package:direct_accounting/Pages/User/LoginPage.dart';
 import 'package:flutter/material.dart';
 
 ///THE DRAWER WIDGET OF CLIENT SECTION
@@ -59,7 +58,7 @@ class CustomDrawer extends StatelessWidget {
             title: Text('Ayarlar', style: TextStyle(color: page == 4 ? Colors.blueGrey : Colors.black),),
             onTap:  page != 4 ? onButton4Pressed : null,
           ),
-          ListTile(
+          /*ListTile(
             leading: Icon(Icons.logout, color: Colors.red),
             title: Text('Çıkış Yap', style: TextStyle(color: Colors.red),),
             onTap:  (){
@@ -70,7 +69,7 @@ class CustomDrawer extends StatelessWidget {
                 ),
               );
             },
-          ),
+          ),*/
         ],
       ),
     );

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
-import 'package:uuid/uuid.dart';
 
 class DatabaseHelper {
   String ROOT = "http://188.245.203.49/api.php"; //ROOT URL
@@ -171,6 +170,26 @@ class DatabaseHelper {
     return null;
   }
 
+  //UPDATE ACCOUNTANT PASSWORD
+  Future<String> updateAdminPassword(String adminID, String newPassword) async {
+    var map = <String, dynamic>{
+      'action': 'UPDATE_ADMIN_PASSWORD',
+      'adminID': adminID,
+      'newPassword': newPassword,
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      if (data is Map<String, dynamic> && data.containsKey('status')) {
+        return data['status'] == 'success' ? 'success' : 'error';
+      } else {
+        return 'error';
+      }
+    } else {
+      return 'error';
+    }
+  } 
+  
   //------------------ COMPANIES ------------------//
   //CREATE CLIENT ACCOUNT
   Future<String> createCompany(String uid, String companyName, String companyAdmin, String companyMessage, String companyPassword, String companyFiles) async {
@@ -262,6 +281,17 @@ class DatabaseHelper {
     }
     return null;
   }
+
+  //DELETE THE GIVEN CLIENT
+  Future<String> deleteCompany(String companyID) async {
+    var map = <String, dynamic>{
+      'action': 'DELETE_COMPANY',
+      'companyID': companyID,
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    return response.statusCode == 200 ? response.body : 'error';
+  }
+
 
   //------------------ FILES ------------------//
   // CREATE_FILE dosya upload ettiği için normal bir POST'tan farklı olacaktır.

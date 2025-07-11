@@ -55,7 +55,7 @@ class _FileViewPageState extends State<FileViewPage> {
         : [];
     for (String file in fileIds) {
       Map<String, dynamic>? fileMap = await DatabaseHelper().getFile(file);
-      if (fileMap != null && fileMap["fileType"] == fileTypeDecider) {
+      if (fileMap["fileType"] == fileTypeDecider) {
         docs.add(fileMap);
       }
     }
@@ -117,6 +117,7 @@ class _FileViewPageState extends State<FileViewPage> {
                     shareFile: () {
                       shareFile(doc);
                     },
+                    deleteFile: () => deleteFile(doc),
                   );
                 },
                 childCount: documents.length,
@@ -458,6 +459,64 @@ class _FileViewPageState extends State<FileViewPage> {
       Share.shareXFiles([XFile(savePath)], text: document["fileName"]);
     }
   }
+  //Delete file from database and remove it from users
+  void deleteFile(Map<String, dynamic> document) async {
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Dosya Sil"),
+      content: Text(
+        "Bu dosyayı silmek istediğinizden emin misiniz?\n\n${document["fileName"]}"
+      ),
+      actions: [
+        TextButton(
+          child: const Text("Vazgeç"),
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+        TextButton(
+          child: const Text("Sil", style: TextStyle(color: Colors.red)),
+          onPressed: () => Navigator.of(context).pop(true),
+        ),
+      ],
+    ),
+  );
+
+  if (confirm == true) {
+    LoadingIndicator(context).showLoading();
+
+    // 1. Veritabanından sil
+    await DatabaseHelper().deleteFile(document["fileID"]);
+
+    // 2. Kullanıcılardan bağlantısını kaldır
+    var compDetails = await DatabaseHelper().getCompanyDetails(widget.companyId);
+    var admDetails = await DatabaseHelper().getAdminDetails(widget.companyAdmin);
+
+    if (compDetails == null || admDetails == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Dosya sahip bilgisi alınamadı."))
+    );
+    Navigator.pop(context); // LoadingIndicator'ı kapat
+    return;
+    }
+
+    List<String> companyFiles = compDetails["companyFiles"].toString().split(",");
+    List<String> adminFiles = admDetails["adminFiles"].toString().split(",");
+
+    companyFiles.remove(document["fileID"]);
+    adminFiles.remove(document["fileID"]);
+
+    await DatabaseHelper().updateCompanyFiles(widget.companyId, companyFiles.join(","));
+    await DatabaseHelper().updateAdminFiles(widget.companyAdmin, adminFiles.join(","));
+
+    Navigator.pop(context); // Loading'i kapat
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Dosya silindi."))
+    );
+
+    // Ekranı yenile
+    await getDocumentsAfterUpload();
+  }
+}
 
   //DATETIME FORMATTER FOR BETTER STRINGS
   String formatDateTime(dynamic value) {

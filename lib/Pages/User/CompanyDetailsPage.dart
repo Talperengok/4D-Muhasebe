@@ -39,9 +39,7 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
       _isLoading = true;
     });
     companyDetails = (await DatabaseHelper().getCompanyDetails(widget.companyID))!;
-    if (companyDetails != null) {
-      _nameController.text = companyDetails['companyName'] ?? '';
-    }
+    _nameController.text = companyDetails['companyName'] ?? '';
     setState(() {
       _isLoading = false;
     });

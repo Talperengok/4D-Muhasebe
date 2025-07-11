@@ -1,10 +1,12 @@
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:direct_accounting/Pages/User/LoginPage.dart';
+import 'package:direct_accounting/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../Components/CompanyCard.dart';
 import '../User/main_menu.dart';
 import '../../Services/Database/DatabaseHelper.dart';
+import 'package:direct_accounting/Pages/Admin/AdminUpdatePage.dart';
 
 ///PAGE THAT ACCOUNTANTS SEE THEIR CLIENTS (MAIN PAGE FOR ACCOUNTANT)
 
@@ -144,6 +146,107 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
               )),
     );
   }
+  void deleteFile(Map<String, dynamic> document) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Dosya Sil"),
+        content: Text(
+          "Bu dosyayı silmek istediğinizden emin misiniz?\n\n${document["fileName"]}"
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Vazgeç"),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+          TextButton(
+            child: const Text("Sil", style: TextStyle(color: Colors.red)),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      LoadingIndicator(context).showLoading();
+
+      final fileID = document["fileID"];
+      if (fileID == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Geçersiz dosya ID.")));
+        Navigator.pop(context);
+        return;
+      }
+
+      await DatabaseHelper().deleteFile(fileID);
+
+      var compDetails = await DatabaseHelper().getCompanyDetails(document["companyID"]);
+      var admDetails = await DatabaseHelper().getAdminDetails(document["companyAdmin"]);
+
+      if (compDetails == null || admDetails == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Kullanıcı bilgisi alınamadı.")));
+        Navigator.pop(context);
+        return;
+      }
+
+      List<String> companyFiles = compDetails["companyFiles"]?.toString().split(",") ?? [];
+      List<String> adminFiles = admDetails["adminFiles"]?.toString().split(",") ?? [];
+
+      companyFiles.remove(fileID);
+      adminFiles.remove(fileID);
+
+      await DatabaseHelper().updateCompanyFiles(document["companyID"], companyFiles.join(","));
+      await DatabaseHelper().updateAdminFiles(document["companyAdmin"], adminFiles.join(","));
+
+      Navigator.pop(context); // loading kapat
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Dosya silindi.")));
+
+      await getAdminData(); // ekranı yenile
+    }
+  }
+
+  // Müvekkil silme fonksiyonu
+  void deleteClient(Map<String, dynamic> company) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Müvekkil Sil"),
+        content: Text(
+          "Bu müvekkili silmek istediğinizden emin misiniz?\n\n${company["companyName"]} (${company["companyID"]})"
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Vazgeç"),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+          TextButton(
+            child: const Text("Sil", style: TextStyle(color: Colors.red)),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      LoadingIndicator(context).showLoading();
+
+      final companyID = company["companyID"];
+      if (companyID == null) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Geçersiz müvekkil ID.")));
+        return;
+      }
+
+      String result = await DatabaseHelper().deleteCompany(companyID);
+      Navigator.pop(context); // loading kapat
+
+      if (result == "success") {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Müvekkil silindi.")));
+        await getAdminData();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Silme işlemi başarısız.")));
+      }
+    }
+  }
 
   // Müvekkil ekleme dialogu aç
   void openCreateCompanyDialog() {
@@ -194,9 +297,14 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
         backgroundColor: const Color(0xFF080F2B),
         leading: IconButton(
           onPressed: () {
-            getAdminData();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdminUpdatePage(adminID: widget.adminID),
+              ),
+            );
           },
-          icon: const Icon(Icons.settings_backup_restore, color: Colors.white),
+          icon: const Icon(Icons.settings, color: Colors.white),
         ),
         actions: [
           IconButton(
@@ -262,6 +370,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
                                       showDetails: () => showDetails(company),
                                       sendMessage: () => sendMessage(company['companyID'].toString()),
                                       showFiles: () => showFiles(company),
+                                      deleteClient: () => deleteClient(company),
                                     ),
                                   ],
                                 );

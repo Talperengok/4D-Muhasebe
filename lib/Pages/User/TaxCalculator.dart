@@ -1,5 +1,3 @@
-import 'package:direct_accounting/Components/CustomDrawer.dart';
-import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:flutter/material.dart';
 
