@@ -389,16 +389,26 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     );
                   },
-                  child: const Text("Kayıt Ol"),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D1B2A),
+                  ),
+                  child: const Text(
+                    'Kayıt Ol',
+                    style: TextStyle(
+                      color: Color(0xFFEFEFEF),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 TextButton(
-                    onPressed: (){
-                      isLogin = true; //CHANGE PAGE TO LOGIN PAGE
-                      setState(() {
+                  onPressed: (){
+                    isLogin = true; //CHANGE PAGE TO LOGIN PAGE
+                    setState(() {
 
-                      });
-                },
-                child: const Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Color(0xFFEFEFEF)))
+                    });
+                  },
+                  child: const Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Color(0xFFEFEFEF))),
                 )
               ],
             ) : Column(
