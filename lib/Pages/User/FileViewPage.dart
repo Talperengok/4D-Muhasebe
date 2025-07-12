@@ -79,7 +79,7 @@ class _FileViewPageState extends State<FileViewPage> {
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF0D1B2A),
@@ -131,7 +131,7 @@ class _FileViewPageState extends State<FileViewPage> {
         onPressed: (){
           showUploadFileModalBottomSheet(context);
         },
-        backgroundColor: const Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF1E3A5F),
         child: const Icon(Icons.add, color: Color(0xFFEFEFEF),),
       ),
     );
@@ -189,7 +189,7 @@ class _FileViewPageState extends State<FileViewPage> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color(0xFF1A1A1A),
                       ),
                     ),
                     const SizedBox(height: 20),

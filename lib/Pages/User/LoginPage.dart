@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///LOGIN PAGE
 class LoginPage extends StatefulWidget {
 
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -114,18 +114,18 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Admin" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
+                        backgroundColor: userType == "Admin" ? const Color(0xFF0D1B2A) : const Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Muhasebeci',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFFEFEFEF),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    SizedBox(width: 5,),
+                    const SizedBox(width: 5,),
                     ElevatedButton(
                       onPressed: ()  {
                           userType = "Company"; //CHANGE USER TYPE
@@ -134,12 +134,12 @@ class _LoginPageState extends State<LoginPage> {
                           });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Company" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
+                        backgroundColor: userType == "Company" ? const Color(0xFF0D1B2A) : const Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Müvekkil',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFFEFEFEF),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -147,14 +147,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
                 const Text(
                   'Hoş Geldiniz!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFFEFEFEF),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -184,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 24),
               ElevatedButton(
@@ -213,16 +213,16 @@ class _LoginPageState extends State<LoginPage> {
                     }
                   }
                   else{
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Giriş yapılırken bir sorun oluştu! Bilgilerinizi ve kullanıcı türünü kontrol edin.")));
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Giriş yapılırken bir sorun oluştu! Bilgilerinizi ve kullanıcı türünü kontrol edin.")));
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF0D1B2A),
+                  backgroundColor: const Color(0xFF0D1B2A),
                 ),
                 child: const Text(
                   'Giriş Yap',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFFEFEFEF),
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -235,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       });
                     },
-                    child: Text("Hesabınız Yok Mu? Kayıt Olun!", style: TextStyle(color: Colors.white),)
+                    child: const Text("Hesabınız Yok Mu? Kayıt Olun!", style: TextStyle(color: Color(0xFFEFEFEF)),)
                 )
               ],
             ) :
@@ -254,18 +254,18 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Admin" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
+                        backgroundColor: userType == "Admin" ? const Color(0xFF0D1B2A) : const Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Muhasebeci',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFFEFEFEF),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    SizedBox(width: 5,),
+                    const SizedBox(width: 5,),
                     ElevatedButton(
                       onPressed: ()  {
                         userType = "Company"; //CHANGE USER TYPE
@@ -274,12 +274,12 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Company" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
+                        backgroundColor: userType == "Company" ? const Color(0xFF0D1B2A) : const Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Müvekkil',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFFEFEFEF),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -287,14 +287,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
                 const Text(
                   'Hoş Geldiniz!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFFEFEFEF),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -309,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -323,7 +323,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -338,7 +338,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -353,21 +353,21 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {  //CREATE ACCOUNT FOR NEW ACCOUNTANT
                     if (passwordController.text != passwordAgainController.text) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Şifreler uyuşmuyor!"))
+                        const SnackBar(content: Text("Şifreler uyuşmuyor!"))
                       );
                       return;
                     }
 
                     if (idController.text.isEmpty || nameController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Tüm alanları doldurun!"))
+                        const SnackBar(content: Text("Tüm alanları doldurun!"))
                       );
                       return;
                     }
@@ -376,7 +376,7 @@ class _LoginPageState extends State<LoginPage> {
                       idController.text,
                       nameController.text,
                       "",
-                      DateTime.now().add(Duration(days: 365)).toString(),
+                      DateTime.now().add(const Duration(days: 365)).toString(),
                       passwordController.text,
                       "",
                       ""
@@ -389,7 +389,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     );
                   },
-                  child: Text("Kayıt Ol"),
+                  child: const Text("Kayıt Ol"),
                 ),
                 TextButton(
                     onPressed: (){
@@ -398,7 +398,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       });
                 },
-                child: Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Color(0xFFEFEFEF)))
+                child: const Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Color(0xFFEFEFEF)))
                 )
               ],
             ) : Column(
@@ -416,7 +416,7 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Admin" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
+                        backgroundColor: userType == "Admin" ? const Color(0xFF0D1B2A) : const Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Muhasebeci',
@@ -427,7 +427,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 5,),
+                    const SizedBox(width: 5,),
                     ElevatedButton(
                       onPressed: ()  {
                         userType = "Company"; //CHANGE USER TYPE
@@ -436,7 +436,7 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Company" ? Color(0xFF0D1B2A) : Color(0xFF908EC0),
+                        backgroundColor: userType == "Company" ? const Color(0xFF0D1B2A) : const Color(0xFF908EC0),
                       ),
                       child: const Text(
                         'Müvekkil',
@@ -449,7 +449,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
                 const Text(
                   'Hoş Geldiniz!',
                   textAlign: TextAlign.center,
@@ -488,7 +488,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Color(0xFFEFEFEF)),
                       ),
                     ),
                     IconButton(
@@ -496,7 +496,7 @@ class _LoginPageState extends State<LoginPage> {
                           String u = generateUID(nameController.text);
                           companyIdController.text = u;
                         },
-                        icon: Icon(Icons.rocket_launch_rounded))
+                        icon: const Icon(Icons.rocket_launch_rounded))
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -562,7 +562,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () async {// CREATE ACCOUNT FOR NEW CLİENT
                     if (passwordAgainController.text != passwordController.text) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Şifreler uyuşmuyor!"))
+                        const SnackBar(content: Text("Şifreler uyuşmuyor!"))
                       );
                       return;
                     }
@@ -570,14 +570,14 @@ class _LoginPageState extends State<LoginPage> {
                     var acc = await DatabaseHelper().getAdminDetails(idController.text);
                     if (acc == null || acc.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Muhasebeci bulunamadı!"))
+                        const SnackBar(content: Text("Muhasebeci bulunamadı!"))
                       );
                       return;
                     }
 
                     if (acc["UID"] != uidController.text) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Muhasebeci kimliği uyuşmuyor!"))
+                        const SnackBar(content: Text("Muhasebeci kimliği uyuşmuyor!"))
                       );
                       return;
                     }
@@ -604,7 +604,7 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF0D1B2A),
+                    backgroundColor: const Color(0xFF0D1B2A),
                   ),
                   child: const Text(
                     'Kayıt Ol',
@@ -622,7 +622,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       });
                     },
-                    child: Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Color(0xFFEFEFEF)))
+                    child: const Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Color(0xFFEFEFEF)))
                 )
               ],
             ),

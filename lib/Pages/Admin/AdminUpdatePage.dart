@@ -117,9 +117,9 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.arrow_back), color: Colors.white,),
+          icon: const Icon(Icons.arrow_back), color: Color(0xFFEFEFEF),),
         title: const Text('Muhasebeci Ayarları',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+            style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
           backgroundColor: const Color(0xFF0D1B2A),
           centerTitle: true,
         ),
@@ -136,7 +136,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                     decoration: const InputDecoration(
                       labelText: 'Admin Adı',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.admin_panel_settings, color: Color(0xFF474878)),
+                      prefixIcon: Icon(Icons.admin_panel_settings, color: Color(0xFF1E3A5F)),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -146,7 +146,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                     decoration: const InputDecoration(
                       labelText: 'Admin ID',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.copy, color: Color(0xFF474878)),
+                      prefixIcon: Icon(Icons.copy, color: Color(0xFF1E3A5F)),
                     ),
                     onTap: () async {
                       await Clipboard.setData(ClipboardData(text: widget.adminID));
@@ -163,7 +163,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                       decoration: const InputDecoration(
                         labelText: 'Eski Şifre',
                         border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock, color: Color(0xFF474878)),
+                        prefixIcon: Icon(Icons.lock, color: Color(0xFF1E3A5F)),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -173,7 +173,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                       decoration: const InputDecoration(
                         labelText: 'Yeni Şifre',
                         border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock_open, color: Color(0xFF474878)),
+                        prefixIcon: Icon(Icons.lock_open, color: Color(0xFF1E3A5F)),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -184,7 +184,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                       ),
                       child: const Text(
                         'Şifreyi Güncelle',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
                       ),
                     ),
                   ] else ...[
@@ -199,7 +199,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                       ),
                       child: const Text(
                         'Şifreyi Değiştir',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
                       ),
                     ),
                   ],
@@ -214,7 +214,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                       ),
                       child: const Text(
                         'Kaydet',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
                       ),
                     ),
                   ),

@@ -58,7 +58,7 @@ class CompanyCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFFEFEFEF),
                   ),
                 ),
               ],
@@ -104,7 +104,7 @@ class CompanyCard extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                   ),
                   onPressed: () => deleteClient(),
-                  child: const Icon(Icons.delete, color: Colors.white),
+                  child: const Icon(Icons.delete, color: Color(0xFFEFEFEF)),
                 ),
               ],
             ),

@@ -246,10 +246,10 @@ class _ChatPageState extends State<ChatPage> {
                   Container(
                     height: 120,
                     child: FileCard(
-                      gradient1: const Color(0xFF474878),
-                      gradient2: const Color(0xFF325477),
-                      buttonColor: const Color(0xFF080F2B),
-                      iconColor: Colors.white,
+                      gradient1: const Color(0xFF3D5A80),
+                      gradient2: const Color(0xFF2E4A66),
+                      buttonColor: const Color(0xFF1E3A5F),
+                      iconColor: Color(0xFFEFEFEF),
                       filePath: filePath,
                       imagePath: imagePath,
                       showInfo: () {
@@ -419,7 +419,7 @@ class _ChatPageState extends State<ChatPage> {
                       icon: const Icon(Icons.upload_file),
                       label: const Text('Dosya Seç'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF080F2B),
+                        backgroundColor: const Color(0xFF0D1B2A),
                         minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
@@ -502,9 +502,9 @@ class _ChatPageState extends State<ChatPage> {
                             setState((){});
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: selectedType == "personel" ? const Color(0xFF908EC0) : const Color(0xFF080F2B),
+                            backgroundColor: selectedType == "personel" ? const Color(0xFFAAB6C8) : const Color(0xFF0D1B2A),
                           ),
-                          child: const Text("Özlük", style: TextStyle(color: Colors.white)),
+                          child: const Text("Özlük", style: TextStyle(color: Color(0xFFEFEFEF))),
                         ),
                         ElevatedButton(
                           onPressed: (){
@@ -512,9 +512,9 @@ class _ChatPageState extends State<ChatPage> {
                             setState((){});
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: selectedType == "decleration" ? const Color(0xFF908EC0) : const Color(0xFF080F2B),
+                            backgroundColor: selectedType == "decleration" ? const Color(0xFFAAB6C8) : const Color(0xFF0D1B2A),
                           ),
-                          child: const Text("Beyanname", style: TextStyle(color: Colors.white)),
+                          child: const Text("Beyanname", style: TextStyle(color: Color(0xFFEFEFEF))),
                         ),
                         ElevatedButton(
                           onPressed: (){
@@ -522,9 +522,9 @@ class _ChatPageState extends State<ChatPage> {
                             setState((){});
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: selectedType == "insurance" ? const Color(0xFF908EC0) : const Color(0xFF080F2B),
+                            backgroundColor: selectedType == "insurance" ? const Color(0xFFAAB6C8) : const Color(0xFF0D1B2A),
                           ),
-                          child: const Text("Sigorta", style: TextStyle(color: Colors.white)),
+                          child: const Text("Sigorta", style: TextStyle(color: Color(0xFFEFEFEF))),
                         ),
                       ],
                     ),
@@ -570,7 +570,7 @@ class _ChatPageState extends State<ChatPage> {
                           : null,
                       child: const Text('Karşıya Yükle ve Gönder'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF080F2B),
+                        backgroundColor: const Color(0xFF0D1B2A),
                         minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
@@ -596,17 +596,17 @@ class _ChatPageState extends State<ChatPage> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.arrow_back), color: Colors.white,)
+          icon: const Icon(Icons.arrow_back), color: Color(0xFFEFEFEF),)
             : IconButton(
           onPressed: () {
             _scaffoldKey.currentState!.openDrawer();
           },
-          icon: const Icon(Icons.menu), color: Colors.white,),
+          icon: const Icon(Icons.menu), color: Color(0xFFEFEFEF),),
         title: const Text('Sohbet',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-        backgroundColor: const Color(0xFF080F2B),
+          style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
+        backgroundColor: const Color(0xFF0D1B2A),
       ),
-      backgroundColor: const Color(0xFF908EC0),
+      backgroundColor: const Color(0xFFAAB6C8),
         drawer: CustomDrawer(
           onButton1Pressed: (){
             Navigator.pushReplacement(
@@ -658,7 +658,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-            color: Colors.white,
+            color: Color(0xFFEFEFEF),
             child: Row(
               children: [
                 IconButton(
@@ -682,9 +682,9 @@ class _ChatPageState extends State<ChatPage> {
                 ElevatedButton(
                   onPressed: _sendMessage,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF080F2B),
+                    backgroundColor: const Color(0xFF0D1B2A),
                   ),
-                  child: const Text("Gönder", style: TextStyle(color: Colors.white)),
+                  child: const Text("Gönder", style: TextStyle(color: Color(0xFFEFEFEF))),
                 ),
               ],
             ),

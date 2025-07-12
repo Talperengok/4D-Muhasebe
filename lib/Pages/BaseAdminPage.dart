@@ -64,12 +64,12 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
       appBar: AppBar(
         title: const Text(
           'Admin Paneli',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF0D1B2A),
       ),
-      backgroundColor: const Color(0xFF908EC0),
+      backgroundColor: const Color(0xFFAAB6C8),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isMobile

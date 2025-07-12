@@ -304,7 +304,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
               ),
             );
           },
-          icon: const Icon(Icons.settings, color: Colors.white),
+          icon: const Icon(Icons.settings, color: Color(0xFFEFEFEF)),
         ),
         actions: [
           IconButton(
@@ -402,7 +402,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: openCreateCompanyDialog,
         backgroundColor: const Color(0xFF0D1B2A),
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Color((0xFFEFEFEF))),
       ),
     );
   }

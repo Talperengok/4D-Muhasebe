@@ -12,8 +12,8 @@ class LoadingIndicator {
       builder: (context) {
         return Center(
           child: LoadingAnimationWidget.flickr(
-            leftDotColor: Color(0xFF023373),
-            rightDotColor: Color(0xFF04C4D9),
+            leftDotColor: const Color(0xFF023373),
+            rightDotColor: const Color(0xFF04C4D9),
             size: 80,
           ),
         );
