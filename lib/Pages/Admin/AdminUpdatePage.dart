@@ -120,9 +120,10 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
           icon: const Icon(Icons.arrow_back), color: Colors.white,),
         title: const Text('Muhasebeci Ayarları',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-          backgroundColor: const Color(0xFF080F2B),
+          backgroundColor: const Color(0xFF0D1B2A),
           centerTitle: true,
         ),
+      backgroundColor: const Color(0xFFAAB6C8),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -179,7 +180,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                     ElevatedButton(
                       onPressed: _changePassword,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF474878),
+                        backgroundColor: const Color(0xFF1E3A5F),
                       ),
                       child: const Text(
                         'Şifreyi Güncelle',
@@ -194,7 +195,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF474878),
+                        backgroundColor: const Color(0xFF1E3A5F),
                       ),
                       child: const Text(
                         'Şifreyi Değiştir',
@@ -208,7 +209,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                     child: ElevatedButton(
                       onPressed: _saveChanges,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF474878),
+                        backgroundColor: const Color(0xFF1E3A5F),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: const Text(

@@ -291,10 +291,10 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       appBar: AppBar(
         title: const Text(
           'DM - Muhasebeci Paneli',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF0D1B2A),
         leading: IconButton(
           onPressed: () {
             Navigator.push(
@@ -318,7 +318,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
           )
         ],
       ),
-      backgroundColor: const Color(0xFF908EC0),
+      backgroundColor: const Color(0xFFAAB6C8),
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -358,21 +358,19 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
                           child: Column(
                             children: [
                               ...paginatedCompanies.map((company) {
-                                return Column(
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    CompanyCard(
-                                      companyData: company,
-                                      gradient1: const Color(0xFF474878),
-                                      gradient2: const Color(0xFF325477),
-                                      buttonColor: const Color(0xFF080F2B),
-                                      iconColor: Colors.white,
-                                      showDetails: () => showDetails(company),
-                                      sendMessage: () => sendMessage(company['companyID'].toString()),
-                                      showFiles: () => showFiles(company),
-                                      deleteClient: () => deleteClient(company),
-                                    ),
-                                  ],
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0), // Yanlardan daraltma
+                                  child: CompanyCard(
+                                    companyData: company,
+                                    gradient1: const Color(0xFF3D5A80),
+                                    gradient2: const Color(0xFF2E4A66),
+                                    buttonColor: const Color(0xFF1E3A5F),
+                                    iconColor: const Color(0xFFEFEFEF),
+                                    showDetails: () => showDetails(company),
+                                    sendMessage: () => sendMessage(company['companyID'].toString()),
+                                    showFiles: () => showFiles(company),
+                                    deleteClient: () => deleteClient(company),
+                                  ),
                                 );
                               }).toList(),
                               const SizedBox(height: 10),
@@ -403,7 +401,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: openCreateCompanyDialog,
-        backgroundColor: const Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF0D1B2A),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

@@ -88,12 +88,12 @@ class _LoginPageState extends State<LoginPage> {
         title: Text(
           isLogin ? 'Giriş Yap' : "Kayıt Ol",
           style:const  TextStyle(
-            color: Colors.white,
+            color: Color(0xFFEFEFEF),
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF0D1B2A),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -114,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Admin" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                        backgroundColor: userType == "Admin" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Muhasebeci',
@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                           });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Company" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                        backgroundColor: userType == "Company" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Müvekkil',
@@ -217,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF080F2B),
+                  backgroundColor: Color(0xFF0D1B2A),
                 ),
                 child: const Text(
                   'Giriş Yap',
@@ -254,7 +254,7 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Admin" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                        backgroundColor: userType == "Admin" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Muhasebeci',
@@ -274,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Company" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                        backgroundColor: userType == "Company" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Müvekkil',
@@ -398,7 +398,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       });
                 },
-                child: Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Colors.white))
+                child: Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Color(0xFFEFEFEF)))
                 )
               ],
             ) : Column(
@@ -416,12 +416,12 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Admin" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                        backgroundColor: userType == "Admin" ? Color(0xFF0D1B2A) : Color(0xFFAAB6C8),
                       ),
                       child: const Text(
                         'Muhasebeci',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFFEFEFEF),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -436,12 +436,12 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: userType == "Company" ? Color(0xFF080F2B) : Color(0xFF908EC0),
+                        backgroundColor: userType == "Company" ? Color(0xFF0D1B2A) : Color(0xFF908EC0),
                       ),
                       child: const Text(
                         'Müvekkil',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFFEFEFEF),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -456,7 +456,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFFEFEFEF),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -471,7 +471,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -511,7 +511,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -525,7 +525,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -540,7 +540,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -555,7 +555,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
@@ -604,12 +604,12 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF080F2B),
+                    backgroundColor: Color(0xFF0D1B2A),
                   ),
                   child: const Text(
                     'Kayıt Ol',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFEFEFEF),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -622,14 +622,14 @@ class _LoginPageState extends State<LoginPage> {
 
                       });
                     },
-                    child: Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Colors.white))
+                    child: Text("Hesabınız Var Mı? Giriş Yapın!", style: TextStyle(color: Color(0xFFEFEFEF)))
                 )
               ],
             ),
           ),
         ),
       ),
-      backgroundColor: const Color(0xFF908EC0),
+      backgroundColor: const Color(0xFFAAB6C8),
     );
   }
 }

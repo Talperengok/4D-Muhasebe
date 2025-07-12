@@ -68,18 +68,22 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF080F2B),
-        title: const Text('Vergi Hesaplayıcı', style: TextStyle(color: Colors.white),),
-        actions: [
-          IconButton(onPressed: (){
+        leading: IconButton(
+          onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) =>
-                  MainMenu(currentUserId: widget.companyId, isAdmin: false, companyID: widget.companyId)
+              MaterialPageRoute(
+                builder: (context) => MainMenu(
+                  currentUserId: widget.companyId,
+                  isAdmin: false,
+                  companyID: widget.companyId,
+                ),
               ),
             );
-          }, icon: Icon(Icons.home, color: Colors.white,))
-        ],
+          },
+          icon: const Icon(Icons.arrow_back),
+          color: const Color(0xFFEFEFEF),
+        ),
       ),
       backgroundColor: const Color(0xFF908EC0),
       body: Padding(

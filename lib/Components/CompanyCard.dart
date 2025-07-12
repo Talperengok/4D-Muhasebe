@@ -30,19 +30,20 @@ class CompanyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
       ),
+      elevation: 4, // Hafif gölge efekti
       margin: EdgeInsets.zero,
       child: Container(
         width: double.infinity,
-        height: 100,
+        height: 110,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [gradient1, gradient2],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.all(8),
         child: Column(
