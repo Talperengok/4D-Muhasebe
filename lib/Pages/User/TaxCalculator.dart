@@ -31,15 +31,15 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            backgroundColor: const Color(0xFF080F2B),
+            backgroundColor: const Color(0xFF0D1B2A),
             title: const Text(
               'Vergi Hesaplama Sonucu',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Color(0xFFEFEFEF)),
             ),
             content: Text(
               'Seçilen KDV: $_selectedTax\nHesaplanan KDV: ₺${taxAmount.toStringAsFixed(2)}\n'
                   'Gelir Vergisi : ₺${(price * 0.25).toStringAsFixed(2)}\nKalan : ₺${(price * 0.75 - taxAmount).toStringAsFixed(2)}',
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFFEFEFEF)),
             ),
             actions: [
               TextButton(
@@ -48,7 +48,7 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
                 },
                 child: const Text(
                   'Tamam',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Color(0xFFEFEFEF)),
                 ),
               ),
             ],
@@ -68,20 +68,26 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF080F2B),
-        title: const Text('Vergi Hesaplayıcı', style: TextStyle(color: Colors.white),),
-        actions: [
-          IconButton(onPressed: (){
+        leading: IconButton(
+          onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) =>
-                  MainMenu(currentUserId: widget.companyId, isAdmin: false, companyID: widget.companyId)
+              MaterialPageRoute(
+                builder: (context) => MainMenu(
+                  currentUserId: widget.companyId,
+                  isAdmin: false,
+                  companyID: widget.companyId,
+                ),
               ),
             );
-          }, icon: Icon(Icons.home, color: Colors.white,))
-        ],
+          },
+          icon: const Icon(Icons.arrow_back),
+          color: const Color(0xFFEFEFEF),
+        ),
+        backgroundColor: const Color(0xFF0D1B2A),
+        title: const Text('Vergi Hesaplayıcı', style: TextStyle(color: Color(0xFFEFEFEF)),),
       ),
-      backgroundColor: const Color(0xFF908EC0),
+      backgroundColor: const Color(0xFFAAB6C8),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -89,25 +95,25 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
           children: [
             const Text(
               'Vergi Türünü Seçin',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: Color(0xFFEFEFEF), fontSize: 18),
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
               value: _selectedTax,
-              dropdownColor: const Color(0xFF080F2B),
+              dropdownColor: const Color(0xFF0D1B2A),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xFF080F2B),
+                fillColor: const Color(0xFF0D1B2A),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
               ),
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFFEFEFEF)),
               items: _taxRatios.keys.map((String vergi) {
                 return DropdownMenuItem<String>(
                   value: vergi,
-                  child: Text(vergi, style: const TextStyle(color: Colors.white)),
+                  child: Text(vergi, style: const TextStyle(color: Color(0xFFEFEFEF))),
                 );
               }).toList(),
               onChanged: (String? yeniDeger) {
@@ -119,16 +125,16 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
             const SizedBox(height: 20),
             const Text(
               'Vergiler Dahil Fiyatı Girin',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: Color(0xFFEFEFEF), fontSize: 18),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: _priceController,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFFEFEFEF)),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xFF080F2B),
+                fillColor: const Color(0xFF0D1B2A),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
@@ -141,12 +147,12 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
             ElevatedButton(
               onPressed: _calcTax,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF080F2B),
+                backgroundColor: const Color(0xFF0D1B2A),
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: const Text(
                 'Vergi Hesapla',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(color: Color(0xFFEFEFEF), fontSize: 16),
               ),
             ),
           ],

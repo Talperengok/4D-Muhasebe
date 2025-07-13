@@ -30,19 +30,20 @@ class CompanyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
       ),
+      elevation: 4, // Hafif gölge efekti
       margin: EdgeInsets.zero,
       child: Container(
         width: double.infinity,
-        height: 100,
+        height: 110,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [gradient1, gradient2],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -57,7 +58,7 @@ class CompanyCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFFEFEFEF),
                   ),
                 ),
               ],
@@ -103,7 +104,7 @@ class CompanyCard extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                   ),
                   onPressed: () => deleteClient(),
-                  child: const Icon(Icons.delete, color: Colors.white),
+                  child: const Icon(Icons.delete, color: Color(0xFFEFEFEF)),
                 ),
               ],
             ),

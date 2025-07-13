@@ -188,14 +188,14 @@ class _MainMenuState extends State<MainMenu> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back), color: Colors.white,)
+          icon: const Icon(Icons.arrow_back), color: Color(0xFFEFEFEF),)
             : IconButton(
           onPressed: () {
             _scaffoldKey.currentState!.openDrawer();
           },
-          icon: Icon(Icons.menu), color: Colors.white,),
+          icon: const Icon(Icons.menu), color: const Color(0xFFEFEFEF),),
         title: const Text('Direkt Muhasebe',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+          style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
         centerTitle: true,
         actions: [
           IconButton(
@@ -210,7 +210,7 @@ class _MainMenuState extends State<MainMenu> {
             icon: const Icon(Icons.logout, color: Colors.red),
           )
         ],
-        backgroundColor: Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF0D1B2A),
       ),
       drawer: !widget.isAdmin ? CustomDrawer(
           onButton1Pressed: (){
@@ -254,7 +254,7 @@ class _MainMenuState extends State<MainMenu> {
             Text(displayName, style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Color(0xFF1A1A1A),
             ),),
             const SizedBox(height: 16),
             ...buttons.map((button) {
@@ -273,8 +273,8 @@ class _MainMenuState extends State<MainMenu> {
                       onInsurancesClicked(context);
                     }
                   },
-                  gradient1: Color(0xFF474878),
-                  gradient2: Color(0xFF325477),
+                  gradient1: const Color(0xFF3D5A80),
+                  gradient2: const Color(0xFF2E4A66),
                   height: screenHeight / 3 - 100,
                   width: screenWidth - 20,
                 ),
@@ -310,8 +310,8 @@ class _MainMenuState extends State<MainMenu> {
                       onInsurancesClicked(context);
                     }
                   },
-                  gradient1: Color(0xFF305476),
-                  gradient2: Color(0xFF474878),
+                  gradient1: const Color(0xFF305476),
+                  gradient2: const Color(0xFF474878),
                   height: 200,
                   width: 200,
                 );
@@ -320,7 +320,7 @@ class _MainMenuState extends State<MainMenu> {
           ],
         ),
       ),
-      backgroundColor: Color(0xFF908EC0),
+      backgroundColor: const Color(0xFFAAB6C8),
     );
   }
 }

@@ -79,13 +79,13 @@ class _FileViewPageState extends State<FileViewPage> {
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF080F2B),
+        backgroundColor: const Color(0xFF0D1B2A),
         leading: IconButton(onPressed: (){
           Navigator.pop(context);
-        }, icon: const Icon(Icons.arrow_back), color: Colors.white,),
+        }, icon: const Icon(Icons.arrow_back), color: Color(0xFFEFEFEF),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -102,10 +102,10 @@ class _FileViewPageState extends State<FileViewPage> {
                     (context, index) {
                   final doc = documents[index];
                   return FileCard(
-                    gradient1: const Color(0xFF474878),
-                    gradient2: const Color(0xFF325477),
-                    buttonColor: Colors.black,
-                    iconColor: Colors.white,
+                    gradient1: const Color(0xFF3D5A80),
+                    gradient2: const Color(0xFF2E4A66),
+                    buttonColor: const Color(0xFF1E3A5F),
+                    iconColor: const Color(0xFFEFEFEF),
                     filePath: doc["filePath"],
                     imagePath: widget.imagePath,
                     showInfo: () {
@@ -126,13 +126,13 @@ class _FileViewPageState extends State<FileViewPage> {
           ],
         ),
       ),
-      backgroundColor: const Color(0xFF908EC0),
+      backgroundColor: const Color(0xFFAAB6C8),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           showUploadFileModalBottomSheet(context);
         },
-        backgroundColor: const Color(0xFF080F2B),
-        child: const Icon(Icons.add, color: Colors.white,),
+        backgroundColor: const Color(0xFF1E3A5F),
+        child: const Icon(Icons.add, color: Color(0xFFEFEFEF),),
       ),
     );
   }
@@ -189,7 +189,7 @@ class _FileViewPageState extends State<FileViewPage> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Color(0xFF1A1A1A),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -198,7 +198,7 @@ class _FileViewPageState extends State<FileViewPage> {
                       icon: const Icon(Icons.upload_file),
                       label: const Text('Dosya Seç'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF080F2B),
+                        backgroundColor: const Color(0xFF0D1B2A),
                         minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
@@ -303,7 +303,7 @@ class _FileViewPageState extends State<FileViewPage> {
                           : null,
                       child: const Text('Karşıya Yükle'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF080F2B),
+                        backgroundColor: const Color(0xFF0D1B2A),
                         minimumSize: const Size(double.infinity, 50),
                       ),
                     ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 ///THE DRAWER WIDGET OF CLIENT SECTION
 
 class CustomDrawer extends StatelessWidget {
@@ -23,17 +22,19 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
+      child: Container(
+        color: const Color(0xFFAAB6C8),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Color(0xFF080F2B),
+              color: Color(0xFF0D1B2A),
             ),
             child: Text(
               'Direkt Muhasebe\nMüvekkil - Menü',
               style: TextStyle(
-                color: Colors.white,
+                color: Color(0xFFEFEFEF),
                 fontSize: 24,
               ),
             ),
@@ -69,8 +70,9 @@ class CustomDrawer extends StatelessWidget {
                 ),
               );
             },
-          ),*/
-        ],
+          */
+          ],
+        ),
       ),
     );
   }

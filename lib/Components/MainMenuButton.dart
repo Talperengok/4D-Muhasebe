@@ -65,7 +65,7 @@ class MainMenuButton extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFFEFEFEF),
                   ),
                 ),
               ],
@@ -76,7 +76,7 @@ class MainMenuButton extends StatelessWidget {
                 informerText,
                 style: const TextStyle(
                   fontSize: 16,
-                  color: Colors.white,
+                  color: Color(0xFFEFEFEF),
                   fontWeight: FontWeight.w400,
                 ),
                 textAlign: TextAlign.center,

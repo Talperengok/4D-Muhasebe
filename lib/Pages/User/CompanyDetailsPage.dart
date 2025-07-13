@@ -122,12 +122,13 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
             _scaffoldKey.currentState!.openDrawer();
           },
 
-          icon: const Icon(Icons.menu), color: Colors.white,),
+          icon: const Icon(Icons.menu), color: Color(0xFFEFEFEF),),
         title: const Text('Şirket Ayarları',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-        backgroundColor: const Color(0xFF080F2B),
+          style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
+        backgroundColor: const Color(0xFF0D1B2A),
         centerTitle: true,
       ),
+      backgroundColor: const Color(0xFFAAB6C8),
       drawer: CustomDrawer(
         onButton1Pressed: (){
           Navigator.pushReplacement(
@@ -174,7 +175,7 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
               decoration: const InputDecoration(
                 labelText: 'Şirket Adı',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.business, color: Color(0xFF474878)),
+                prefixIcon: Icon(Icons.business, color: Color(0xFF3D5A80)),
               ),
             ),
             const SizedBox(height: 16),
@@ -184,7 +185,7 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
               decoration: const InputDecoration(
                 labelText: 'Şirket ID',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.copy, color: Color(0xFF474878)),
+                prefixIcon: Icon(Icons.copy, color: Color(0xFF3D5A80)),
               ),
               onTap: () async {
                 await Clipboard.setData(ClipboardData(text: widget.companyID));
@@ -201,7 +202,7 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
                 decoration: const InputDecoration(
                   labelText: 'Eski Şifre',
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock, color: Color(0xFF474878)),
+                  prefixIcon: Icon(Icons.lock, color: Color(0xFF3D5A80)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -211,18 +212,18 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
                 decoration: const InputDecoration(
                   labelText: 'Yeni Şifre',
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock_open, color: Color(0xFF474878)),
+                  prefixIcon: Icon(Icons.lock_open, color: Color(0xFF3D5A80)),
                 ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _changePassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF474878),
+                  backgroundColor: const Color(0xFF1E3A5F),
                 ),
                 child: const Text(
                   'Şifreyi Güncelle',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
                 ),
               ),
             ] else ...[
@@ -233,11 +234,11 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF474878),
+                  backgroundColor: const Color(0xFF1E3A5F),
                 ),
                 child: const Text(
                   'Şifreyi Değiştir',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
                 ),
               ),
             ],
@@ -247,12 +248,12 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
               child: ElevatedButton(
                 onPressed: _saveChanges,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF474878),
+                  backgroundColor: const Color(0xFF1E3A5F),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: const Text(
                   'Kaydet',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
                 ),
               ),
             ),
