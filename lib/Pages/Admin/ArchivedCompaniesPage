@@ -1,0 +1,81 @@
+import 'package:flutter/material.dart';
+import '../../Services/Database/DatabaseHelper.dart';
+
+class ArchivedCompaniesPage extends StatefulWidget {
+  const ArchivedCompaniesPage({Key? key}) : super(key: key);
+
+  @override
+  State<ArchivedCompaniesPage> createState() => _ArchivedCompaniesPageState();
+}
+
+class _ArchivedCompaniesPageState extends State<ArchivedCompaniesPage> {
+  final db = DatabaseHelper();
+  List<Map<String, dynamic>> archivedCompanies = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchArchivedCompanies();
+  }
+
+  Future<void> fetchArchivedCompanies() async {
+    final companies = await db.getArchivedCompanies();
+    setState(() {
+      archivedCompanies = companies;
+      isLoading = false;
+    });
+  }
+
+  Future<void> unarchiveCompany(String companyID) async {
+    final result = await db.updateCompanyArchiveStatus(companyID, false);
+    if (result == 'success') {
+      await fetchArchivedCompanies();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Müvekkil arşivden çıkarıldı.")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("İşlem başarısız: $result")),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // sayfadan çık
+          },
+          tooltip: 'Geri',
+        ),
+        title: const Text("Arşivlenmiş Müvekkiller"),
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : archivedCompanies.isEmpty
+              ? const Center(child: Text("Arşivlenmiş müvekkil yok."))
+              : ListView.builder(
+                  itemCount: archivedCompanies.length,
+                  itemBuilder: (context, index) {
+                    final company = archivedCompanies[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: ListTile(
+                        title: Text(company['companyName'] ?? ''),
+                        subtitle: Text("ID: ${company['companyID']}"),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.restore),
+                          onPressed: () => unarchiveCompany(company['companyID']),
+                          tooltip: "Arşivden Çıkar",
+                        ),
+                      ),
+                    );
+                  },
+                ),
+    );
+  }
+}

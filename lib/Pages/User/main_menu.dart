@@ -2,6 +2,7 @@ import 'package:direct_accounting/Components/CustomDrawer.dart';
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
 import 'package:direct_accounting/Pages/User/FileViewPage.dart';
+import 'package:direct_accounting/Pages/User/TasksPage.dart';
 import 'package:direct_accounting/Pages/User/LoginPage.dart';
 import 'package:direct_accounting/Pages/User/TaxCalculator.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
@@ -36,6 +37,7 @@ class _MainMenuState extends State<MainMenu> {
   void initState() {
     super.initState();
     getCompanyInfo();
+    loadFileRequests();
   }
 
   //GETS CLIENT DETAILS
@@ -146,6 +148,16 @@ class _MainMenuState extends State<MainMenu> {
     });
   }
 
+  //File_Requests
+  List<Map<String, dynamic>> fileRequests = [];
+
+  Future<void> loadFileRequests() async {
+    List<Map<String, dynamic>> requests = await DatabaseHelper().getFileRequestsForCompany(widget.companyID);
+    setState(() {
+      fileRequests = requests;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery
@@ -199,16 +211,24 @@ class _MainMenuState extends State<MainMenu> {
         centerTitle: true,
         actions: [
           IconButton(
+            icon: const Icon(Icons.task_alt, color: Colors.white),
+            tooltip: 'Görevler',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => TasksDialog(companyId: widget.companyID),
+              );
+            },
+          ),
+          IconButton(
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => 
-                LoginPage()
-                ),
+                MaterialPageRoute(builder: (context) => LoginPage()),
               );
             },
             icon: const Icon(Icons.logout, color: Colors.red),
-          )
+          ),
         ],
         backgroundColor: const Color(0xFF0D1B2A),
       ),

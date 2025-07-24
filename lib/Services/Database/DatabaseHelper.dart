@@ -117,6 +117,109 @@ class DatabaseHelper {
     var response = await http.post(Uri.parse(ROOT), body: map);
     return response.statusCode == 200 ? response.body : 'error';
   }
+  //archive client
+  Future<String> archiveClient(String companyID) async {
+    var map = <String, dynamic>{
+      'action': 'ARCHIVE_CLIENT',
+      'companyID': companyID,
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    return response.statusCode == 200 ? response.body : 'error';
+  }
+
+  //UPDATE CLIENT ARCHIVE STATUS
+  Future<String> updateCompanyArchiveStatus(String companyID, bool isArchived) async {
+    var map = <String, dynamic>{
+      'action': 'UPDATE_COMPANY_ARCHIVE',
+      'companyID': companyID,
+      'isArchived': isArchived ? '1' : '0',
+    };
+
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final data = jsonDecode(response.body);
+      if (data is Map<String, dynamic> && data.containsKey('status')) {
+        return data['status']; // success or error
+      }
+    }
+    return 'error';
+  }
+  
+  //GET Active Companies 
+  Future<List<Map<String, dynamic>>> getActiveCompanies() async {
+    var map = {'action': 'GET_ACTIVE_COMPANIES'};
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((e) => e as Map<String, dynamic>).toList();
+    }
+    return [];
+  }
+
+  //GET Archived Companies
+  Future<List<Map<String, dynamic>>> getArchivedCompanies() async {
+    var map = {'action': 'GET_ARCHIVED_COMPANIES'};
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    print("Response status: ${response.statusCode}");
+    print("Response body: ${response.body}");
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      print("Archived companies count: ${data.length}");
+      return data.map((e) => e as Map<String, dynamic>).toList();
+    }
+    return [];
+  }
+
+  //Müvekkile dosya talebi gönderme
+  Future<void> sendFileRequest({
+    required String adminID,
+    required String companyID,
+    required List<String> requestedFiles,
+  }) async {
+    var map = <String, dynamic>{
+      'action': 'SEND_FILE_REQUEST',
+      'adminID': adminID,
+      'companyID': companyID,
+      'requestedFiles': requestedFiles.join(','), // Virgülle ayır
+    };
+
+    var response = await http.post(Uri.parse(ROOT), body: map);
+
+    if (response.statusCode == 200) {
+      if (response.body.trim() == 'success') {
+        return;
+      } else {
+        throw Exception("Dosya talebi başarısız: ${response.body}");
+      }
+    } else {
+      throw Exception("Sunucu hatası: ${response.statusCode}");
+    }
+  }
+
+  //Muhasebe tarafından gönderilen dosya taleplerini alma
+  Future<List<Map<String, dynamic>>> getFileRequestsForCompany(String companyID) async {
+    var map = <String, dynamic>{
+      'action': 'GET_FILE_REQUESTS',
+      'companyID': companyID,
+    };
+
+    var response = await http.post(Uri.parse(ROOT), body: map);
+
+    if (response.statusCode == 200) {
+      try {
+        final data = json.decode(response.body);
+        if (data is List) {
+          return List<Map<String, dynamic>>.from(data);
+        } else {
+          throw Exception("Gelen veri liste değil");
+        }
+      } catch (e) {
+        throw Exception("JSON çözümlenemedi: $e");
+      }
+    } else {
+      throw Exception("Talepler alınamadı (HTTP ${response.statusCode})");
+    }
+  }
 
   //UPDATE ACCOUNTANT SUBSCRIPTION EXPIRY DATE
   Future<String> updateAdminExpiryDate(String adminID, String adminExpiryDate) async {
