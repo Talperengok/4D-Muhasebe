@@ -211,7 +211,7 @@ class _MainMenuState extends State<MainMenu> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.task_alt, color: Colors.white),
+            icon: const Icon(Icons.upload_file, color: Colors.greenAccent),
             tooltip: 'Görevler',
             onPressed: () {
               showDialog(
@@ -232,40 +232,59 @@ class _MainMenuState extends State<MainMenu> {
         ],
         backgroundColor: const Color(0xFF0D1B2A),
       ),
-      drawer: !widget.isAdmin ? CustomDrawer(
-          onButton1Pressed: (){
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) =>
-                  MainMenu(currentUserId: widget.currentUserId, isAdmin: false, companyID: widget.currentUserId)
-              ),
-            );
-          },
-          onButton2Pressed: (){
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) =>
-                  TaxCalculationPage(companyId: widget.companyID,)
-              ),
-            );
-          },
-          onButton3Pressed: () async {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) =>
-                  ChatPage(currentUserID: widget.currentUserId, companyID: widget.companyID, adminID: teamInfo["companyAdmin"])
-              ),
-            );
-          },
-          onButton4Pressed: (){
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) =>
-                  CompanyUpdatePage(companyID: widget.companyID)
-              ),
-            );
-          },
-          page: 1,) : null,
+      drawer: !widget.isAdmin
+          ? ClientDrawer(
+              onButton1Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainMenu(
+                      currentUserId: widget.currentUserId,
+                      isAdmin: false,
+                      companyID: widget.currentUserId,
+                    ),
+                  ),
+                );
+              },
+              onButton2Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TaxCalculationPage(
+                      companyId: widget.companyID,
+                    ),
+                  ),
+                );
+              },
+              onButton3Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      currentUserID: widget.currentUserId,
+                      companyID: widget.companyID,
+                      adminID: teamInfo["companyAdmin"],
+                    ),
+                  ),
+                );
+              },
+              onButton4Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CompanyUpdatePage(
+                      companyID: widget.companyID,
+                    ),
+                  ),
+                );
+              },
+              page: 1, // adjust this if needed based on current page context
+            )
+          : null,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isMobile

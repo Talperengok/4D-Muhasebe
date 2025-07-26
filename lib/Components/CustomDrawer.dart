@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 ///THE DRAWER WIDGET OF CLIENT SECTION
 
-class CustomDrawer extends StatelessWidget {
+class ClientDrawer extends StatelessWidget {
   final Function() onButton1Pressed;
   final Function() onButton2Pressed;
   final Function() onButton3Pressed;
   final Function() onButton4Pressed;
   final int page;
 
-  const CustomDrawer({
+  const ClientDrawer({
     Key? key,
     ///DEFINES FUNCTIONS TO BUTTONS' PRESSES IN ORDER
     required this.onButton1Pressed,
@@ -23,7 +23,72 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: const Color(0xFFAAB6C8),
+        color: const Color(0xFF1E293B),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFF0F172A),
+              ),
+              child: Text(
+                'Müvekkil Menüsü',
+                style: TextStyle(
+                  color: Color(0xFFEFEFEF),
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home, color: page == 1 ? Colors.lightBlueAccent : Colors.white,),
+              title: Text('Ana Sayfa', style: TextStyle(color: page == 1 ? Colors.lightBlueAccent : Colors.white),),
+              onTap: page != 1 ? onButton1Pressed : null,
+            ),
+            ListTile(
+              leading: Icon(Icons.calculate, color: page == 2 ? Colors.lightBlueAccent : Colors.orangeAccent),
+              title: Text('Vergi Hesaplayıcı', style: TextStyle(color: page == 2 ? Colors.lightBlueAccent : Colors.white),),
+              onTap:  page != 2 ? onButton2Pressed : null,
+            ),
+            ListTile(
+              leading: Icon(Icons.chat, color: page == 3 ? Colors.lightBlueAccent : Colors.greenAccent),
+              title: Text("Mesajlar", style: TextStyle(color: page == 3 ? Colors.lightBlueAccent : Colors.white),),
+              onTap:  page != 3 ? onButton3Pressed : null,
+            ),
+            ListTile(
+              leading: Icon(Icons.edit, color: page == 4 ? Colors.lightBlueAccent : Colors.lightBlueAccent),
+              title: Text('Bilgileri Güncelle', style: TextStyle(color: page == 4 ? Colors.lightBlueAccent : Colors.white),),
+              onTap:  page != 4 ? onButton4Pressed : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AdminDrawer extends StatelessWidget {
+  final Function() onButton1Pressed;
+  final Function() onButton2Pressed;
+  final Function() onButton3Pressed;
+  final Function() onButton4Pressed;
+  final int page;
+
+  const AdminDrawer({
+    Key? key,
+    ///DEFINES FUNCTIONS TO BUTTONS' PRESSES IN ORDER
+    required this.onButton1Pressed,
+    required this.onButton2Pressed,
+    required this.onButton3Pressed,
+    required this.onButton4Pressed,
+    ///CURRENT PAGE INDEX
+    required this.page,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Container(
+        color: const Color(0xFF1E293B),
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -32,7 +97,7 @@ class CustomDrawer extends StatelessWidget {
               color: Color(0xFF0D1B2A),
             ),
             child: Text(
-              'Direkt Muhasebe\nMüvekkil - Menü',
+              'Direkt Muhasebe\nMuhasebeci - Menü',
               style: TextStyle(
                 color: Color(0xFFEFEFEF),
                 fontSize: 24,
@@ -40,37 +105,25 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.menu_open, color: page == 1 ? Colors.blueGrey : Colors.black,),
-            title: Text('Ana Menü', style: TextStyle(color: page == 1 ? Colors.blueGrey : Colors.black),),
+            leading: Icon(Icons.home, color: page == 1 ? Colors.lightBlueAccent : Colors.white),
+            title: Text('Ana Menü', style: TextStyle(color: page == 1 ? Colors.lightBlueAccent : Colors.white),),
             onTap: page != 1 ? onButton1Pressed : null,
           ),
           ListTile(
-            leading: Icon(Icons.calculate, color: page == 2 ? Colors.blueGrey : Colors.black),
-            title: Text('Hesaplamalar', style: TextStyle(color: page == 2 ? Colors.blueGrey : Colors.black),),
+            leading: Icon(Icons.calculate, color: page == 2 ? Colors.lightBlueAccent : Colors.orangeAccent),
+            title: Text('Vergi Hesaplayıcı', style: TextStyle(color: page == 2 ? Colors.lightBlueAccent : Colors.white),),
             onTap:  page != 2 ? onButton2Pressed : null,
           ),
           ListTile(
-            leading: Icon(Icons.chat, color: page == 3 ? Colors.blueGrey : Colors.black),
-            title: Text("Muhasebeci'yle Sohbet", style: TextStyle(color: page == 3 ? Colors.blueGrey : Colors.black),),
+            leading: Icon(Icons.archive, color: page == 3 ? Colors.lightBlueAccent : Colors.yellowAccent),
+            title: Text('Arşivlenmiş Müvekkiller', style: TextStyle(color: page == 3 ? Colors.lightBlueAccent : Colors.white),),
             onTap:  page != 3 ? onButton3Pressed : null,
           ),
           ListTile(
-            leading: Icon(Icons.settings, color: page == 4 ? Colors.blueGrey : Colors.black),
-            title: Text('Ayarlar', style: TextStyle(color: page == 4 ? Colors.blueGrey : Colors.black),),
+            leading: Icon(Icons.edit, color: page == 4 ? Colors.lightBlueAccent : Colors.lightBlueAccent),
+            title: Text('Bilgileri Güncelle', style: TextStyle(color: page == 4 ? Colors.lightBlueAccent : Colors.white),),
             onTap:  page != 4 ? onButton4Pressed : null,
           ),
-          /*ListTile(
-            leading: Icon(Icons.logout, color: Colors.red),
-            title: Text('Çıkış Yap', style: TextStyle(color: Colors.red),),
-            onTap:  (){
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) =>
-                    LoginPage()
-                ),
-              );
-            },
-          */
           ],
         ),
       ),

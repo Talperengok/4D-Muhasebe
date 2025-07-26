@@ -1,10 +1,12 @@
-import 'package:direct_accounting/Pages/Admin/ArchivedCompaniesPage';
+import 'package:direct_accounting/Pages/Admin/ArchivedCompaniesPage.dart';
 import 'package:direct_accounting/Pages/User/ChatPage.dart';
 import 'package:direct_accounting/Pages/User/LoginPage.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../User/TaxCalculator.dart';
 import '../../Components/CompanyCard.dart';
+import '../../Components/CustomDrawer.dart';
 import '../User/main_menu.dart';
 import '../../Services/Database/DatabaseHelper.dart';
 import 'package:direct_accounting/Pages/Admin/AdminUpdatePage.dart';
@@ -390,7 +392,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
                 String mess =
                     "Merhabalar, belge paylaşımlarımızı ve iletişimlerimizi "
                     "tek bir yerden yönetebilmemiz için Direkt Muhasebe uygulamasını indirip aşağıdaki bilgilerle "
-                    "kayıt olunuz:\n\nMuhasebeci Sicil No: ${adminData["adminID"]}\nMuhasebeci Benzersiz Kimlik: ${adminData["UID"]}";
+                    "kayıt olunuz:\n\nMuhasebeci Sicil No: ${adminData["adminID"]}\nMuhasebeci Eşsiz Kimlik: ${adminData["UID"]}";
 
                 Clipboard.setData(ClipboardData(text: mess));
 
@@ -417,40 +419,66 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: AdminDrawer(
+        page: 1,
+        onButton1Pressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AdminCompaniesPage(adminID: widget.adminID),
+            ),
+          );
+        },
+        onButton2Pressed: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaxCalculationPage(
+                companyId: widget.adminID,
+                isAdmin: true,
+              ),
+            ),
+          );
+        },
+        onButton3Pressed: () async {
+          Navigator.pop(context);
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ArchivedCompaniesPage(adminID: widget.adminID)),
+          );
+          await getAdminData(); // refresh on return
+        },
+        onButton4Pressed: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AdminUpdatePage(adminID: widget.adminID),
+            ),
+          );
+        },
+      ),
       appBar: AppBar(
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: Color(0xFFEFEFEF)),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
         title: const Text(
-          'DM - Muhasebeci Paneli',
+          'Muhasebeci Paneli',
           style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF0D1B2A),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AdminUpdatePage(adminID: widget.adminID),
-              ),
-            );
-          },
-          icon: const Icon(Icons.settings, color: Color(0xFFEFEFEF)),
-        ),
         actions: [
           IconButton(
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ArchivedCompaniesPage()),
-              );
-              await getAdminData(); // Geri dönünce listeyi yenile
-            },
-            icon: const Icon(Icons.archive, color: Colors.yellowAccent),
-            tooltip: 'Arşivlenmiş Müvekkiller',
-          ),
-          IconButton(
             onPressed: _openFileRequestDialog,
-            icon: const Icon(Icons.file_upload, color: Colors.greenAccent),
-            tooltip: 'Dosya Talebi Gönder',
+            icon: const Icon(Icons.sim_card_download_outlined, color: Colors.greenAccent),
           ),
           IconButton(
             onPressed: () {
@@ -468,7 +496,6 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // 🔍 Arama filtresi artık body içinde burada
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: TextField(
@@ -490,57 +517,69 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
                     },
                   ),
                 ),
-                // 👇 Geri kalan liste
                 Expanded(
-                  child: filteredCompanies.isEmpty
-                      ? const Center(
+                  child: companies.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
                           child: Text(
-                            "Aramanıza uygun müvekkil bulunamadı",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
+                            "Henüz aktif müvekkiliniz bulunmuyor.\nMüvekkil eklemek için sağ alttaki + butonuna tıklayın.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF1A1A1A),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         )
-                      : SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              ...paginatedCompanies.map((company) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0), // Yanlardan daraltma
-                                  child: CompanyCard(
-                                    companyData: company,
-                                    gradient1: const Color(0xFF3D5A80),
-                                    gradient2: const Color(0xFF2E4A66),
-                                    buttonColor: const Color(0xFF1E3A5F),
-                                    iconColor: const Color(0xFFEFEFEF),
-                                    showDetails: () => showDetails(company),
-                                    sendMessage: () => sendMessage(company['companyID'].toString()),
-                                    showFiles: () => showFiles(company),
-                                    archiveClient: () => archiveClient(company),
-                                  ),
-                                );
-                              }).toList(),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                      : filteredCompanies.isEmpty
+                          ? const Center(
+                              child: Text(
+                                "Aramanıza uygun müvekkil bulunamadı",
+                                style: TextStyle(color: Colors.white, fontSize: 18),
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              child: Column(
                                 children: [
-                                  ElevatedButton(
-                                    onPressed: currentPage > 0
-                                        ? () => setState(() => currentPage--)
-                                        : null,
-                                    child: const Text("Önceki"),
+                                  ...paginatedCompanies.map((company) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                                      child: CompanyCard(
+                                        companyData: company,
+                                        gradient1: const Color(0xFF3D5A80),
+                                        gradient2: const Color(0xFF2E4A66),
+                                        buttonColor: const Color(0xFF1E3A5F),
+                                        iconColor: const Color(0xFFEFEFEF),
+                                        showDetails: () => showDetails(company),
+                                        sendMessage: () => sendMessage(company['companyID'].toString()),
+                                        showFiles: () => showFiles(company),
+                                        archiveClient: () => archiveClient(company),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: currentPage > 0
+                                            ? () => setState(() => currentPage--)
+                                            : null,
+                                        child: const Text("Önceki"),
+                                      ),
+                                      const SizedBox(width: 20),
+                                      ElevatedButton(
+                                        onPressed: (currentPage + 1) * itemsPerPage < filteredCompanies.length
+                                            ? () => setState(() => currentPage++)
+                                            : null,
+                                        child: const Text("Sonraki"),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 20),
-                                  ElevatedButton(
-                                    onPressed: (currentPage + 1) * itemsPerPage < filteredCompanies.length
-                                        ? () => setState(() => currentPage++)
-                                        : null,
-                                    child: const Text("Sonraki"),
-                                  ),
+                                  const SizedBox(height: 20),
                                 ],
                               ),
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                        ),
+                            ),
                 ),
               ],
             ),

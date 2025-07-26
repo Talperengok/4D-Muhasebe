@@ -4,6 +4,7 @@ import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 ///LOGIN PAGE
 class LoginPage extends StatefulWidget {
@@ -15,6 +16,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _adminFormKey = GlobalKey<FormState>();
   String userType = "Admin"; //DEFINE LOGGING USER
 
   bool isLogin = true; //DEFINE LOGIN OR SIGNUP PAGE
@@ -161,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: idController,
                   decoration: InputDecoration(
-                    labelText: 'Kullanıcı ID',
+                    labelText: userType == "Admin" ? 'Sicil Numarası' : 'Şirket Kullanıcı Adı',
                     labelStyle: const TextStyle(color: Colors.white70),
                     filled: true,
                     fillColor: Colors.white10,
@@ -298,18 +300,31 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                TextField(
-                  controller: idController,
-                  decoration: InputDecoration(
-                    labelText: 'Sicil Numarası',
-                    labelStyle: const TextStyle(color: Colors.white70),
-                    filled: true,
-                    fillColor: Colors.white10,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                Form(
+                  key: _adminFormKey,
+                  child: TextFormField(
+                    controller: idController,
+                    decoration: InputDecoration(
+                      labelText: 'Sicil Numarası',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      filled: true,
+                      fillColor: Colors.white10,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      counterText: "",
                     ),
+                    style: const TextStyle(color: Color(0xFFEFEFEF)),
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: (value) {
+                      if (value == null || value.length != 6) {
+                        return 'Sicil numarası 6 haneli olmalı';
+                      }
+                      return null;
+                    },
                   ),
-                  style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -358,6 +373,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {  //CREATE ACCOUNT FOR NEW ACCOUNTANT
+                    if (!_adminFormKey.currentState!.validate()) return;
                     if (passwordController.text != passwordAgainController.text) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Şifreler uyuşmuyor!"))
@@ -389,7 +405,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     );
                   },
-                style: ElevatedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0D1B2A),
                   ),
                   child: const Text(
@@ -513,7 +529,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: idController,
                   decoration: InputDecoration(
-                    labelText: 'Muhasebeci Sicil No',
+                    labelText: 'Muhasebeci Sicil No(muhasebecinizden isteyin)',
                     labelStyle: const TextStyle(color: Colors.white70),
                     filled: true,
                     fillColor: Colors.white10,
@@ -527,7 +543,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: uidController,
                   decoration: InputDecoration(
-                    labelText: 'Muhasebeci Benzersiz Kimlik',
+                    labelText: 'Muhasebeci Eşsiz Kimlik(muhasebecinizden isteyin)',
                     labelStyle: const TextStyle(color: Colors.white70),
                     filled: true,
                     fillColor: Colors.white10,

@@ -607,40 +607,49 @@ class _ChatPageState extends State<ChatPage> {
         backgroundColor: const Color(0xFF0D1B2A),
       ),
       backgroundColor: const Color(0xFFAAB6C8),
-        drawer: CustomDrawer(
-          onButton1Pressed: (){
+        drawer: ClientDrawer(
+          onButton1Pressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) =>
-                  MainMenu(currentUserId: widget.companyID, isAdmin: false, companyID: widget.companyID)
+              MaterialPageRoute(
+                builder: (context) => MainMenu(
+                  currentUserId: widget.companyID,
+                  isAdmin: false,
+                  companyID: widget.companyID,
+                ),
               ),
             );
           },
-          onButton2Pressed: (){
+          onButton2Pressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) =>
-                  TaxCalculationPage(companyId: widget.companyID,)
+              MaterialPageRoute(
+                builder: (context) => TaxCalculationPage(companyId: widget.companyID),
               ),
             );
           },
           onButton3Pressed: () async {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) =>
-                  ChatPage(currentUserID: widget.companyID, companyID: widget.companyID, adminID: companyData["companyAdmin"])
+              MaterialPageRoute(
+                builder: (context) => ChatPage(
+                  currentUserID: widget.companyID,
+                  companyID: widget.companyID,
+                  adminID: companyData["companyAdmin"],
+                ),
               ),
             );
           },
-          onButton4Pressed: (){
+          onButton4Pressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) =>
-                  CompanyUpdatePage(companyID: widget.companyID)
+              MaterialPageRoute(
+                builder: (context) => CompanyUpdatePage(companyID: widget.companyID),
               ),
             );
           },
-          page: 3,),
+          page: 3,
+        ),
         body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Column(

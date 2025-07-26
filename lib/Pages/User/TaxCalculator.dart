@@ -1,17 +1,25 @@
 import 'package:direct_accounting/Pages/User/main_menu.dart';
 import 'package:flutter/material.dart';
+import '../../Components/CustomDrawer.dart';
+import 'ChatPage.dart';
+import '../User/CompanyDetailsPage.dart';
+import '../Admin/AdminCompaniesPage.dart';
+import '../Admin/AdminUpdatePage.dart';
+import '../Admin/ArchivedCompaniesPage.dart';
 
 
 class TaxCalculationPage extends StatefulWidget {
   final String companyId;
+  final bool isAdmin;
 
-  const TaxCalculationPage({Key? key, required this.companyId}) : super(key: key);
+  const TaxCalculationPage({Key? key, required this.companyId, this.isAdmin = false}) : super(key: key);
 
   @override
   State<TaxCalculationPage> createState() => _TaxCalculationPageState();
 }
 
 class _TaxCalculationPageState extends State<TaxCalculationPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _priceController = TextEditingController();
   String? _selectedTax;
   final Map<String, double> _taxRatios = {
@@ -67,22 +75,98 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: widget.isAdmin
+          ? AdminDrawer(
+              page: 2,
+              onButton1Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AdminCompaniesPage(adminID: widget.companyId),
+                  ),
+                );
+              },
+              onButton2Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TaxCalculationPage(companyId: widget.companyId, isAdmin: true),
+                  ),
+                );
+              },
+              onButton3Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => ArchivedCompaniesPage(adminID: widget.companyId)),
+                );
+              },
+              onButton4Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AdminUpdatePage(adminID: widget.companyId),
+                  ),
+                );
+              },
+            )
+          : ClientDrawer(
+              page: 2,
+              onButton1Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainMenu(
+                      currentUserId: widget.companyId,
+                      isAdmin: false,
+                      companyID: widget.companyId,
+                    ),
+                  ),
+                );
+              },
+              onButton2Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TaxCalculationPage(companyId: widget.companyId, isAdmin: false),
+                  ),
+                );
+              },
+              onButton3Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      currentUserID: widget.companyId,
+                      companyID: widget.companyId,
+                      adminID: '',
+                    ),
+                  ),
+                );
+              },
+              onButton4Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CompanyUpdatePage(companyID: widget.companyId),
+                  ),
+                );
+              },
+            ),
       appBar: AppBar(
         leading: IconButton(
+          icon: const Icon(Icons.menu, color: Color(0xFFEFEFEF)),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MainMenu(
-                  currentUserId: widget.companyId,
-                  isAdmin: false,
-                  companyID: widget.companyId,
-                ),
-              ),
-            );
+            _scaffoldKey.currentState?.openDrawer();
           },
-          icon: const Icon(Icons.arrow_back),
-          color: const Color(0xFFEFEFEF),
         ),
         backgroundColor: const Color(0xFF0D1B2A),
         title: const Text('Vergi Hesaplayıcı', style: TextStyle(color: Color(0xFFEFEFEF)),),

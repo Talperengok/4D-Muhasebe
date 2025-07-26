@@ -91,38 +91,55 @@ class _FileViewPageState extends State<FileViewPage> {
         padding: const EdgeInsets.all(16.0),
         child: CustomScrollView(
           slivers: [
-            SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: isMobile ? 1 : 2,
-                childAspectRatio: 3.3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  final doc = documents[index];
-                  return FileCard(
-                    gradient1: const Color(0xFF3D5A80),
-                    gradient2: const Color(0xFF2E4A66),
-                    buttonColor: const Color(0xFF1E3A5F),
-                    iconColor: const Color(0xFFEFEFEF),
-                    filePath: doc["filePath"],
-                    imagePath: widget.imagePath,
-                    showInfo: () {
-                      showInfo(doc);
-                    },
-                    downloadFile: () {
-                      downloadFile(doc);
-                    },
-                    shareFile: () {
-                      shareFile(doc);
-                    },
-                    deleteFile: () => deleteFile(doc),
-                  );
-                },
-                childCount: documents.length,
-              ),
-            ),
+            documents.isEmpty
+                ? SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 60.0),
+                        child: Text(
+                          'Henüz bu kategoriye ait dosya yüklenmemiş.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: isMobile ? 1 : 2,
+                      childAspectRatio: 3.3,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                        final doc = documents[index];
+                        return FileCard(
+                          gradient1: const Color(0xFF3D5A80),
+                          gradient2: const Color(0xFF2E4A66),
+                          buttonColor: const Color(0xFF1E3A5F),
+                          iconColor: const Color(0xFFEFEFEF),
+                          filePath: doc["filePath"],
+                          imagePath: widget.imagePath,
+                          showInfo: () {
+                            showInfo(doc);
+                          },
+                          downloadFile: () {
+                            downloadFile(doc);
+                          },
+                          shareFile: () {
+                            shareFile(doc);
+                          },
+                          deleteFile: () => deleteFile(doc),
+                        );
+                      },
+                      childCount: documents.length,
+                    ),
+                  ),
           ],
         ),
       ),

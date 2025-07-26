@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
 import 'package:direct_accounting/widget/loading_indicator.dart';
+import '../../Components/CustomDrawer.dart';
+import 'AdminCompaniesPage.dart';
+import 'ArchivedCompaniesPage.dart';
+import '../User/TaxCalculator.dart';
 
 /// SETTINGS PAGE FOR ADMINS
 
@@ -112,17 +116,50 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      drawer: AdminDrawer(
+        onButton1Pressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AdminCompaniesPage(adminID: widget.adminID)),
+          );
+        },
+        onButton2Pressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaxCalculationPage(companyId: widget.adminID, isAdmin: true),
+            ),
+          );
+        },
+        onButton3Pressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ArchivedCompaniesPage(adminID: widget.adminID),
+            ),
+          );
+        },
+        onButton4Pressed: () {
+          Navigator.pop(context);
+          // File request dialog or route
+        },
+        page: 4,
+      ),
       appBar: AppBar(
         leading: IconButton(
+          icon: const Icon(Icons.menu, color: Color(0xFFEFEFEF)),
           onPressed: () {
-            Navigator.pop(context);
+            _scaffoldKey.currentState?.openDrawer();
           },
-          icon: const Icon(Icons.arrow_back), color: Color(0xFFEFEFEF),),
-        title: const Text('Muhasebeci Ayarları',
-            style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
-          backgroundColor: const Color(0xFF0D1B2A),
-          centerTitle: true,
         ),
+        title: const Text('Muhasebeci Ayarları',
+            style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF0D1B2A),
+        centerTitle: true,
+      ),
       backgroundColor: const Color(0xFFAAB6C8),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

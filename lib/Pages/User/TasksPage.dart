@@ -35,6 +35,19 @@ class _TasksDialogState extends State<TasksDialog> {
     }
   }
 
+  Future<void> _markTaskCompleted(String requestId) async {
+    try {
+      final result = await DatabaseHelper().markFileRequestCompleted(requestId);
+      if (result == 'success') {
+        await loadRequests();
+      } else {
+        print("Görev güncellenemedi: $result");
+      }
+    } catch (e) {
+      print("Hata oluştu: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -60,11 +73,20 @@ class _TasksDialogState extends State<TasksDialog> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: requestedFiles.map((file) => Text("• ${file.trim()}")).toList(),
                         ),
-                        trailing: Chip(
-                          label: Text(task["status"] ?? "Bekliyor"),
-                          backgroundColor: task["status"] == "Tamamlandı"
-                              ? Colors.green.shade100
-                              : Colors.orange.shade100,
+                        trailing: IconButton(
+                          icon: Icon(
+                            task["status"] == "tamamlandı"
+                                ? Icons.check_circle
+                                : Icons.check_circle_outline,
+                            color: task["status"] == "tamamlandı"
+                                ? Colors.green
+                                : Colors.grey,
+                          ),
+                          onPressed: () {
+                            if (task["status"] != "tamamlandı") {
+                              _markTaskCompleted(task["requestID"].toString());
+                            }
+                          },
                         ),
                       );
                     },

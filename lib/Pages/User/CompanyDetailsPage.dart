@@ -129,41 +129,50 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFAAB6C8),
-      drawer: CustomDrawer(
-        onButton1Pressed: (){
+      drawer: ClientDrawer(
+        onButton1Pressed: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) =>
-                MainMenu(currentUserId: widget.companyID, isAdmin: false, companyID: widget.companyID)
+            MaterialPageRoute(
+              builder: (context) => MainMenu(
+                currentUserId: widget.companyID,
+                isAdmin: false,
+                companyID: widget.companyID,
+              ),
             ),
           );
         },
-        onButton2Pressed: (){
+        onButton2Pressed: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) =>
-                TaxCalculationPage(companyId: widget.companyID,)
+            MaterialPageRoute(
+              builder: (context) => TaxCalculationPage(companyId: widget.companyID),
             ),
           );
         },
         onButton3Pressed: () async {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) =>
-                ChatPage(currentUserID: widget.companyID, companyID: widget.companyID, adminID: companyDetails["companyAdmin"])
+            MaterialPageRoute(
+              builder: (context) => ChatPage(
+                currentUserID: widget.companyID,
+                companyID: widget.companyID,
+                adminID: companyDetails["companyAdmin"],
+              ),
             ),
           );
         },
-        onButton4Pressed: (){
+        onButton4Pressed: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) =>
-                CompanyUpdatePage(companyID: widget.companyID)
+            MaterialPageRoute(
+              builder: (context) => CompanyUpdatePage(companyID: widget.companyID),
             ),
           );
         },
-        page: 4,)
-      ,body: _isLoading
+        page: 4,
+      ),
+      body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),

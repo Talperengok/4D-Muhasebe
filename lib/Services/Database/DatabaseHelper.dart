@@ -164,7 +164,6 @@ class DatabaseHelper {
     print("Response body: ${response.body}");
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
-      print("Archived companies count: ${data.length}");
       return data.map((e) => e as Map<String, dynamic>).toList();
     }
     return [];
@@ -585,5 +584,21 @@ class DatabaseHelper {
       }
     }
     return false;
+  }
+  // Mark a file request as completed
+  Future<String> markFileRequestCompleted(String requestId) async {
+    var map = <String, dynamic>{
+      'action': 'MARK_FILE_REQUEST_COMPLETED',
+      'requestID': requestId,
+    };
+
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final data = jsonDecode(response.body);
+      if (data is Map<String, dynamic> && data.containsKey('status')) {
+        return data['status'];
+      }
+    }
+    return 'error';
   }
 }
