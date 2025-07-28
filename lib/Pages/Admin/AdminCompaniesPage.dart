@@ -23,6 +23,7 @@ class AdminCompaniesPage extends StatefulWidget {
 }
 
 class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
+  final GlobalKey _menuKey = GlobalKey();
   final DatabaseHelper dbHelper = DatabaseHelper(); // Backend işlemleri için
 
   Map<String, dynamic> adminData = {}; // Muhasebeci bilgileri
@@ -33,6 +34,10 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
   final int itemsPerPage = 10; // Sayfa başına eleman sayısı
 
   String searchQuery = ""; // Arama sorgusu
+
+  List<String> notifications = [];
+
+  int visibleNotificationCount = 6;
 
   @override
   void initState() {
@@ -61,12 +66,23 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
           .where((company) => company['companyAdmin'] == widget.adminID)
           .toList();
 
+      int prevCompaniesLength = companies.length;
+      List<Map<String, dynamic>> previousCompanies = List.from(companies);
+
       setState(() {
         adminData = adminDetails;
         companies = filteredCompanies;
-        currentPage = 0; // Veri yenilendiğinde sayfa sıfırla
+        currentPage = 0;
         loading = false;
       });
+
+      if (filteredCompanies.length > prevCompaniesLength) {
+        // Find which companies are new and add a notification for each
+        final newCompanies = filteredCompanies.where((c) => !previousCompanies.any((p) => p['companyID'] == c['companyID'])).toList();
+        for (var newCompany in newCompanies) {
+          notifications.insert(0, "Yeni müvekkil eklendi: ${newCompany['companyName']}");
+        }
+      }
     } catch (e) {
       print("Error fetching admin data: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -479,6 +495,72 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
           IconButton(
             onPressed: _openFileRequestDialog,
             icon: const Icon(Icons.sim_card_download_outlined, color: Colors.greenAccent),
+          ),
+          Builder(
+            builder: (context) {
+              return PopupMenuButton<String>(
+                key: _menuKey,
+                icon: const Icon(Icons.notifications, color: Colors.orangeAccent),
+                tooltip: 'Bildirimler',
+                offset: const Offset(100, kToolbarHeight),
+                itemBuilder: (context) {
+                  List<String> visibleNotifications = notifications.take(visibleNotificationCount).toList();
+
+                  List<PopupMenuEntry<String>> items = visibleNotifications.map((note) {
+                    return PopupMenuItem<String>(
+                      value: note,
+                      child: Text(note),
+                    );
+                  }).toList();
+
+                  if (visibleNotificationCount < notifications.length) {
+                    items.add(
+                      PopupMenuItem<String>(
+                        enabled: false,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              visibleNotificationCount += 6;
+                            });
+                            Future.delayed(const Duration(milliseconds: 100), () {
+                              (_menuKey.currentState as PopupMenuButtonState?)?.showButtonMenu();
+                            });
+                          },
+                          child: const Text(
+                            'Daha fazla göster...',
+                            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    );
+                  } else if (notifications.length > 6) {
+                    items.add(
+                      PopupMenuItem<String>(
+                        enabled: false,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              visibleNotificationCount = 6;
+                            });
+                            Future.delayed(const Duration(milliseconds: 100), () {
+                              (_menuKey.currentState as PopupMenuButtonState?)?.showButtonMenu();
+                            });
+                          },
+                          child: const Text(
+                            'Daha az göster...',
+                            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return items;
+                },
+              );
+            },
           ),
           IconButton(
             onPressed: () {

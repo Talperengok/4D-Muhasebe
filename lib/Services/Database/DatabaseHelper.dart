@@ -566,6 +566,26 @@ class DatabaseHelper {
     return {};
   }
 
+  // Muhasebeciden gelen okunmamış mesaj var mı diye kontrol eder
+  Future<bool> hasUnreadMessagesFromAccountant(String companyID) async {
+    var map = <String, dynamic>{
+      'action': 'CHECK_UNREAD_MESSAGES_FROM_ACCOUNTANT',
+      'companyID': companyID,
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      try {
+        var data = jsonDecode(response.body);
+        if (data is Map<String, dynamic> && data.containsKey('unreadCount')) {
+          return (data['unreadCount'] as int) > 0;
+        }
+      } catch (e) {
+        print("JSON parsing error in hasUnreadMessagesFromAccountant: $e");
+      }
+    }
+    return false;
+  }
+
 
   //------------------ AUTHENTICATE_USER ------------------//
   //CHECKS USER CREDENTIALS

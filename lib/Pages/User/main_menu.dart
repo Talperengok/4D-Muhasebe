@@ -32,12 +32,15 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   Map<String, dynamic> teamInfo = {}; //WHICH CLIENT'S PAGE?
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool hasNewMessages = false;
+  final GlobalKey _menuKey = GlobalKey();
+  int visibleNotificationCount = 6;
 
   @override
   void initState() {
     super.initState();
     getCompanyInfo();
-    loadFileRequests();
+    loadFileRequestsAndMessages();
   }
 
   //GETS CLIENT DETAILS
@@ -151,10 +154,13 @@ class _MainMenuState extends State<MainMenu> {
   //File_Requests
   List<Map<String, dynamic>> fileRequests = [];
 
-  Future<void> loadFileRequests() async {
+  Future<void> loadFileRequestsAndMessages() async {
     List<Map<String, dynamic>> requests = await DatabaseHelper().getFileRequestsForCompany(widget.companyID);
+    bool newMessagesExist = await DatabaseHelper().hasUnreadMessagesFromAccountant(widget.companyID);
+
     setState(() {
       fileRequests = requests;
+      hasNewMessages = newMessagesExist;
     });
   }
 
@@ -197,29 +203,134 @@ class _MainMenuState extends State<MainMenu> {
       appBar: AppBar(
         leading: widget.isAdmin
             ? IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back), color: Color(0xFFEFEFEF),)
-            : IconButton(
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
-          },
-          icon: const Icon(Icons.menu), color: const Color(0xFFEFEFEF),),
-        title: const Text('Direkt Muhasebe',
+                icon: const Icon(Icons.arrow_back, color: Color(0xFFEFEFEF)),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            : Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFFEFEFEF)),
+                    onPressed: () {
+                      _scaffoldKey.currentState!.openDrawer();
+                    },
+                  );
+                },
+              ),
+        title: const Text('Müvekkil Paneli',
           style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.upload_file, color: Colors.greenAccent),
-            tooltip: 'Görevler',
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => TasksDialog(companyId: widget.companyID),
-              );
-            },
-          ),
+          if (!widget.isAdmin) ...[
+            IconButton(
+              icon: const Icon(Icons.upload_file, color: Colors.greenAccent),
+              tooltip: 'Görevler',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => TasksDialog(companyId: widget.companyID),
+                );
+              },
+            ),
+            Builder(
+              builder: (context) {
+                return PopupMenuButton<int>(
+                  key: _menuKey,
+                  icon: Icon(
+                    Icons.notifications,
+                    color: hasNewMessages ? Colors.redAccent : Colors.amberAccent,
+                  ),
+                  tooltip: 'Bildirimler',
+                  offset: const Offset(100, kToolbarHeight),
+                  itemBuilder: (BuildContext context) {
+                    final latestRequests = fileRequests.take(visibleNotificationCount).toList();
+                    List<PopupMenuEntry<int>> items = [];
+
+                    if (hasNewMessages) {
+                      items.add(
+                        const PopupMenuItem<int>(
+                          value: 0,
+                          child: Text(
+                            'Yeni mesajınız var.',
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (latestRequests.isEmpty && !hasNewMessages) {
+                      items.add(
+                        const PopupMenuItem<int>(
+                          value: 1,
+                          child: Text("Bildirim yok"),
+                        ),
+                      );
+                    } else {
+                      items.addAll(
+                        List<PopupMenuEntry<int>>.generate(
+                          latestRequests.length,
+                          (index) => const PopupMenuItem<int>(
+                            value: 2,
+                            child: Text(
+                              'Yeni dosya talebi var.',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (visibleNotificationCount < fileRequests.length) {
+                      items.add(
+                        PopupMenuItem<int>(
+                          enabled: false,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              setState(() {
+                                visibleNotificationCount += 6;
+                              });
+                              Future.delayed(const Duration(milliseconds: 100), () {
+                                (_menuKey.currentState as PopupMenuButtonState?)?.showButtonMenu();
+                              });
+                            },
+                            child: const Text(
+                              'Daha fazla göster...',
+                              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      );
+                    } else if (fileRequests.length > 6) {
+                      items.add(
+                        PopupMenuItem<int>(
+                          enabled: false,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              setState(() {
+                                visibleNotificationCount = 6;
+                              });
+                              Future.delayed(const Duration(milliseconds: 100), () {
+                                (_menuKey.currentState as PopupMenuButtonState?)?.showButtonMenu();
+                              });
+                            },
+                            child: const Text(
+                              'Daha az göster...',
+                              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return items;
+                  },
+                );
+              },
+            ),
+          ],
           IconButton(
             onPressed: () {
               Navigator.pushReplacement(

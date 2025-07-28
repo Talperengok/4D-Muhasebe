@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Direkt Muhasebe',
       theme: ThemeData(
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF0D1B2A)),
         useMaterial3: true,
       ),
         //abkteknoltd
