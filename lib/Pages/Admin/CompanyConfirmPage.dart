@@ -39,6 +39,32 @@ class _CompanyConfirmPageState extends State<CompanyConfirmPage> {
   }
 
   Future<void> confirmCompany(String companyID) async {
+    final allCompanies = await DatabaseHelper().getCompanies();
+    final currentCount = allCompanies.where((c) => c['companyAdmin'] == widget.adminID).length;
+
+    final adminDetails = await DatabaseHelper().getAdminDetails(widget.adminID);
+    final String premiumType = adminDetails?['premium_type'] ?? '';
+
+    int maxAllowed;
+
+    if (premiumType.contains('unlimited')) {
+      maxAllowed = 1000000; 
+    } else if (premiumType.contains('limited')) {
+      maxAllowed = 100;
+    } else {
+      maxAllowed = 10;
+    }
+
+    if (currentCount >= maxAllowed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Müvekkil sınırına ulaştınız. Daha fazla müvekkil eklemek için paketinizi yükseltin.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await DatabaseHelper().confirmCompany(companyID);
     fetchPendingCompanies();
   }
