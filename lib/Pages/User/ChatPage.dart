@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:direct_accounting/Components/CustomDrawer.dart';
-import 'package:direct_accounting/Components/FileCard.dart';
-import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
-import 'package:direct_accounting/Pages/User/TaxCalculator.dart';
-import 'package:direct_accounting/Pages/User/main_menu.dart';
-import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
-import 'package:direct_accounting/widget/loading_indicator.dart';
+import '../../Components/CustomDrawer.dart';
+import '../../Components/FileCard.dart';
+import 'CompanyDetailsPage.dart';
+import 'TaxCalculator.dart';
+import 'main_menu.dart';
+import '../../Services/Database/DatabaseHelper.dart';
+import '../../widget/loading_indicator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -596,12 +596,12 @@ class _ChatPageState extends State<ChatPage> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.arrow_back), color: Color(0xFFEFEFEF),)
+          icon: const Icon(Icons.arrow_back), color: const Color(0xFFEFEFEF),)
             : IconButton(
           onPressed: () {
             _scaffoldKey.currentState!.openDrawer();
           },
-          icon: const Icon(Icons.menu), color: Color(0xFFEFEFEF),),
+          icon: const Icon(Icons.menu), color: const Color(0xFFEFEFEF),),
         title: const Text('Sohbet',
           style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
         backgroundColor: const Color(0xFF0D1B2A),
@@ -667,7 +667,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-            color: Color(0xFFEFEFEF),
+            color: const Color(0xFFEFEFEF),
             child: Row(
               children: [
                 IconButton(

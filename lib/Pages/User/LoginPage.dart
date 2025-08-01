@@ -1,7 +1,7 @@
 import 'dart:math';
-import 'package:direct_accounting/Pages/Admin/AdminCompaniesPage.dart';
-import 'package:direct_accounting/Pages/User/main_menu.dart';
-import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
+import '../Admin/AdminCompaniesPage.dart';
+import 'main_menu.dart';
+import '../../Services/Database/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
@@ -193,8 +193,8 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   //LOGIN IF USER EXIST FOR SELECTED USER TYPE
 
-                  bool auth = await DatabaseHelper().authenticateUser(userType, idController.text, passwordController.text);
-                  if(auth){
+                  String authResult = await DatabaseHelper().authenticateUser(userType, idController.text, passwordController.text);
+                  if(authResult == 'success'){
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.setString('uid', idController.text);
                     if(userType == "Admin") {
@@ -214,8 +214,23 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     }
                   }
-                  else{
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Giriş yapılırken bir sorun oluştu! Bilgilerinizi ve kullanıcı türünü kontrol edin.")));
+                  else if (authResult == 'pending_approval') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Hesabınız henüz muhasebeciniz tarafından onaylanmadı."))
+                    );
+                  }
+                  else {
+                    String message;
+
+                    if (authResult == 'pending_approval') {
+                      message = "Hesabınız henüz muhasebeciniz tarafından onaylanmadı.";
+                    } else if (authResult == 'not_confirmed') {
+                      message = "Hesabınız henüz onaylanmamış.";
+                    } else {
+                      message = "Giriş yapılırken bir sorun oluştu! Bilgilerinizi ve kullanıcı türünü kontrol edin.";
+                    }
+
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -609,7 +624,7 @@ class _LoginPageState extends State<LoginPage> {
                     }
 
                     // Şartlar sağlandı, şirket hesabı oluştur
-                    await DatabaseHelper().createCompany(
+                    String result = await DatabaseHelper().createCompany(
                       companyIdController.text,
                       nameController.text,
                       idController.text,
@@ -617,6 +632,23 @@ class _LoginPageState extends State<LoginPage> {
                       passwordController.text,
                       ""
                     );
+
+                    if (result == 'limit_reached') {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("Sınır Aşıldı"),
+                          content: const Text("Muhasebeciniz en fazla 10 müvekkil ekleyebilir. Daha fazlası için premium üyelik gereklidir."),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("Tamam"),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
 
                     Navigator.pushReplacement(
                       context,

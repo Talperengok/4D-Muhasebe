@@ -1,14 +1,13 @@
-import 'package:direct_accounting/Components/CustomDrawer.dart';
-import 'package:direct_accounting/Pages/User/ChatPage.dart';
-import 'package:direct_accounting/Pages/User/CompanyDetailsPage.dart';
-import 'package:direct_accounting/Pages/User/FileViewPage.dart';
-import 'package:direct_accounting/Pages/User/TasksPage.dart';
-import 'package:direct_accounting/Pages/User/LoginPage.dart';
-import 'package:direct_accounting/Pages/User/TaxCalculator.dart';
-import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
-import 'package:direct_accounting/widget/loading_indicator.dart';
+import '../../Components/CustomDrawer.dart';
+import 'ChatPage.dart';
+import 'CompanyDetailsPage.dart';
+import 'FileViewPage.dart';
+import 'TasksPage.dart';
+import 'LoginPage.dart';
+import 'TaxCalculator.dart';
+import '../../Services/Database/DatabaseHelper.dart';
+import '../../widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
-
 import '../../Components/MainMenuButton.dart';
 
 
@@ -335,7 +334,7 @@ class _MainMenuState extends State<MainMenu> {
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
             icon: const Icon(Icons.logout, color: Colors.red),

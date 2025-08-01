@@ -1,4 +1,4 @@
-import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
+import '../Services/Database/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -45,7 +45,15 @@ class DatabaseHelper {
   //------------------ ADMINS ------------------//
 
   //CREATE ACCOUNTANT ACCOUNT
-  Future<String> createAdmin(String adminID, String adminName, String adminCompanies, String adminExpiryDate, String adminPassword, String adminFiles, String adminMessages) async {
+  Future<String> createAdmin(
+    String adminID,
+    String adminName,
+    String adminCompanies,
+    String adminExpiryDate,
+    String adminPassword,
+    String adminFiles,
+    String adminMessages,
+  ) async {
     String uid = generateUID(adminName);
     var map = <String, dynamic>{
       'action': 'CREATE_ADMIN',
@@ -57,6 +65,10 @@ class DatabaseHelper {
       'adminPassword': adminPassword,
       'adminFiles': adminFiles,
       'adminMessages': adminMessages,
+      'isPremium': '0',
+      'premium_type': 'standard',
+      'premium_days': '0',
+      'premium_until': '',
     };
     var response = await http.post(Uri.parse(ROOT), body: map);
     return response.statusCode == 200 ? response.body : 'error';
@@ -179,7 +191,7 @@ class DatabaseHelper {
       'action': 'SEND_FILE_REQUEST',
       'adminID': adminID,
       'companyID': companyID,
-      'requestedFiles': requestedFiles.join(','), // Virgülle ayır
+      'requestedFiles': requestedFiles.join(','), 
     };
 
     var response = await http.post(Uri.parse(ROOT), body: map);
@@ -195,7 +207,7 @@ class DatabaseHelper {
     }
   }
 
-  //Muhasebe tarafından gönderilen dosya taleplerini alma
+  //Muhasebeci tarafından gönderilen dosya taleplerini alma
   Future<List<Map<String, dynamic>>> getFileRequestsForCompany(String companyID) async {
     var map = <String, dynamic>{
       'action': 'GET_FILE_REQUESTS',
@@ -290,11 +302,53 @@ class DatabaseHelper {
     } else {
       return 'error';
     }
-  } 
-  
+  }
+
+  // Upgrade Admin to Premium
+  Future<String> upgradeAdminToPremium(String adminID) async {
+    var map = <String, dynamic>{
+      'action': 'UPGRADE_ADMIN_TO_PREMIUM',
+      'adminID': adminID,
+    };
+
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      var data = jsonDecode(response.body);
+      if (data is Map<String, dynamic> && data.containsKey('status')) {
+        return data['status']; // 'success' veya 'error'
+      }
+    }
+    return 'error';
+  }
+
+  // UPGRADE ADMIN TO PREMIUM WITH DETAILS
+  Future<String> upgradeAdminToPremiumWithDetails(String adminID, String premiumType, int premiumDays) async {
+    var map = <String, dynamic>{
+      'action': 'UPGRADE_PREMIUM_WITH_DETAILS',
+      'adminID': adminID,
+      'premiumType': premiumType,
+      'premiumDays': premiumDays.toString(),
+    };
+
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    return response.statusCode == 200 ? response.body : 'error';
+  }
+
   //------------------ COMPANIES ------------------//
   //CREATE CLIENT ACCOUNT
   Future<String> createCompany(String uid, String companyName, String companyAdmin, String companyMessage, String companyPassword, String companyFiles) async {
+    // Get all companies (active + archived)
+    List<Map<String, dynamic>> allCompanies = await getCompanies();
+    int adminCompanyCount = allCompanies.where((c) => c['companyAdmin'] == companyAdmin).length;
+
+    // TEMP: replace with real check from admin record later
+    final adminDetails = await getAdminDetails(companyAdmin);
+    bool isPremium = adminDetails != null && adminDetails['isPremium'] == '1';
+
+    if (!isPremium && adminCompanyCount >= 10) {
+      return 'limit_reached';
+    }
+
     var map = <String, dynamic>{
       'action': 'CREATE_COMPANY',
       'companyID': uid,
@@ -303,6 +357,7 @@ class DatabaseHelper {
       'companyMessage': companyMessage,
       'companyPassword': companyPassword,
       'companyFiles': companyFiles,
+      'confirmed': 'NO',
     };
     var response = await http.post(Uri.parse(ROOT), body: map);
     return response.statusCode == 200 ? response.body : 'error';
@@ -384,22 +439,54 @@ class DatabaseHelper {
     return null;
   }
 
-  //DELETE THE GIVEN CLIENT
-  Future<String> deleteCompany(String companyID) async {
+  // GET PENDING COMPANIES
+  Future<List<Map<String, dynamic>>> getPendingCompanies(String adminID) async {
+    var map = {
+      'action': 'GET_PENDING_COMPANIES',
+      'adminID': adminID,
+      'filter': 'confirmed_null'
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((e) => e as Map<String, dynamic>).toList();
+    }
+    return [];
+  }
+
+  // CONFIRM A COMPANY
+  Future<String> confirmCompany(String companyID) async {
     var map = <String, dynamic>{
-      'action': 'DELETE_COMPANY',
+      'action': 'UPDATE_COMPANY_CONFIRMATION',
       'companyID': companyID,
+      'confirmed': 'YES',
     };
     var response = await http.post(Uri.parse(ROOT), body: map);
     return response.statusCode == 200 ? response.body : 'error';
   }
 
-
+  // REJECT A COMPANY (set confirmed to "NO")
+  Future<String> rejectCompany(String companyID) async {
+    var map = <String, dynamic>{
+      'action': 'UPDATE_COMPANY_CONFIRMATION',
+      'companyID': companyID,
+      'confirmed': 'NO',
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final data = jsonDecode(response.body);
+      if (data is Map<String, dynamic> && data.containsKey('status')) {
+        return data['status']; // success or error
+      }
+    }
+    return 'error';
+  }
   //------------------ FILES ------------------//
   // CREATE_FILE dosya upload ettiği için normal bir POST'tan farklı olacaktır.
   // Burada http paketini kullanırken multipart istek yapmamız gerekebilir.
 
-  //UPLOAD FILE AND ADD TO ITS ACCOUNTANT AND CLIENT
+  // Dosyayı cihazda yerel olarak kaydeder
+
   Future<String> createFile(
       String fileName,
       String fileType,
@@ -588,22 +675,38 @@ class DatabaseHelper {
 
 
   //------------------ AUTHENTICATE_USER ------------------//
-  //CHECKS USER CREDENTIALS
-  Future<bool> authenticateUser(String type, String id, String password) async {
+  //CHECKS USER CREDENTIALS AND CONFIRMATION STATUS FOR CLIENTS
+  Future<String> authenticateUser(String type, String id, String password) async {
     var map = <String, dynamic>{
       'action': 'AUTHENTICATE_USER',
       'type': type,
       'id': id,
       'password': password,
     };
+
     var response = await http.post(Uri.parse(ROOT), body: map);
+    print("AuthenticateUser Response: ${response.body}");
+
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       var data = jsonDecode(response.body);
+      print("Parsed Data: $data");
+
       if (data is Map && data.containsKey('status')) {
-        return data['status'] == 'true';
+        if (data['status'] == 'true') {
+          if (type == 'Company' && data['confirmed'] != 'YES') {
+            return 'pending_approval';
+          }
+          return 'success';
+        } else {
+          if (data.containsKey('message') &&
+              data['message'].toString().toLowerCase().contains('not confirmed')) {
+            return 'not_confirmed';
+          }
+          return 'invalid';
+        }
       }
     }
-    return false;
+    return 'error';
   }
   // Mark a file request as completed
   Future<String> markFileRequestCompleted(String requestId) async {
@@ -617,6 +720,23 @@ class DatabaseHelper {
       final data = jsonDecode(response.body);
       if (data is Map<String, dynamic> && data.containsKey('status')) {
         return data['status'];
+      }
+    }
+    return 'error';
+  }
+
+  //UPDATE COMPANY CONFIRMATION STATUS
+  Future<String> updateCompanyConfirmation(String companyID, bool isConfirmed) async {
+    var map = <String, dynamic>{
+      'action': 'UPDATE_COMPANY_CONFIRMATION',
+      'companyID': companyID,
+      'confirmed': isConfirmed ? "YES" : "NO",
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final data = jsonDecode(response.body);
+      if (data is Map<String, dynamic> && data.containsKey('status')) {
+        return data['status']; // success or error
       }
     }
     return 'error';

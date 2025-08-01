@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
-import 'package:direct_accounting/widget/loading_indicator.dart';
+import '../../Services/Database/DatabaseHelper.dart';
+import '../../widget/loading_indicator.dart';
 import '../../Components/CustomDrawer.dart';
+import 'PremiumUpgradePage.dart';
 import 'AdminCompaniesPage.dart';
 import 'ArchivedCompaniesPage.dart';
 import '../User/TaxCalculator.dart';
+import 'CompanyConfirmPage.dart';
 
 /// SETTINGS PAGE FOR ADMINS
 
@@ -145,6 +147,24 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
         onButton4Pressed: () {
           Navigator.pop(context);
           // File request dialog or route
+        },
+        onButton5Pressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PremiumUpgradePage(adminID: widget.adminID),
+            ),
+          );
+        },
+        onButton6Pressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CompanyConfirmPage(adminID: widget.adminID),
+            ),
+          );
         },
         page: 4,
       ),

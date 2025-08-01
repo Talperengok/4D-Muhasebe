@@ -1,7 +1,8 @@
-import 'package:direct_accounting/Pages/Admin/ArchivedCompaniesPage.dart';
-import 'package:direct_accounting/Pages/User/ChatPage.dart';
-import 'package:direct_accounting/Pages/User/LoginPage.dart';
-import 'package:direct_accounting/widget/loading_indicator.dart';
+import 'ArchivedCompaniesPage.dart';
+import 'CompanyConfirmPage.dart';
+import '../User/ChatPage.dart';
+import '../User/LoginPage.dart';
+import '../../widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../User/TaxCalculator.dart';
@@ -9,7 +10,8 @@ import '../../Components/CompanyCard.dart';
 import '../../Components/CustomDrawer.dart';
 import '../User/main_menu.dart';
 import '../../Services/Database/DatabaseHelper.dart';
-import 'package:direct_accounting/Pages/Admin/AdminUpdatePage.dart';
+import 'PremiumUpgradePage.dart';
+import 'AdminUpdatePage.dart';
 
 ///PAGE THAT ACCOUNTANTS SEE THEIR CLIENTS (MAIN PAGE FOR ACCOUNTANT)
 
@@ -63,7 +65,9 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
 
       final allCompanies = await dbHelper.getActiveCompanies();
       List<Map<String, dynamic>> filteredCompanies = allCompanies
-          .where((company) => company['companyAdmin'] == widget.adminID)
+          .where((company) =>
+              company['companyAdmin'] == widget.adminID &&
+              company['confirmed'] == "YES")
           .toList();
 
       int prevCompaniesLength = companies.length;
@@ -230,7 +234,21 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       "Vergi Levhası",
       "Faaliyet Belgesi",
       "İmza Sirküleri",
-      "Ticaret Sicil Gazetesi"
+      "Ticaret Sicil Gazetesi",
+      "Kira Kontratı",
+      "Tapu Fotokopisi",
+      "Banka Hesap Dökümü",
+      "İşyeri Açma Ruhsatı",
+      "SGK İşe Giriş Bildirgesi",
+      "Yoklama Fişi",
+      "Oda Kayıt Belgesi",
+      "Gelir Tablosu",
+      "Mizan",
+      "Geçici Vergi Beyannamesi",
+      "KDV Beyannamesi",
+      "SGK Bildirgeleri",
+      "Yıllık Gelir Vergisi Beyannamesi",
+      "Şirket Kuruluş Sözleşmesi"
     ];
 
     String? selectedClientID;
@@ -341,7 +359,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
   }
 }
 
-
+/*
   // Müvekkil silme fonksiyonu
   void deleteClient(Map<String, dynamic> company) async {
     final confirm = await showDialog<bool>(
@@ -385,7 +403,8 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
       }
     }
   }
-
+  */
+  
   // Müvekkil ekleme dialogu aç
   void openCreateCompanyDialog() {
     showDialog(
@@ -407,7 +426,7 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
               onPressed: () {
                 String mess =
                     "Merhabalar, belge paylaşımlarımızı ve iletişimlerimizi "
-                    "tek bir yerden yönetebilmemiz için Direkt Muhasebe uygulamasını indirip aşağıdaki bilgilerle "
+                    "tek bir yerden yönetebilmemiz için 4D Muhasebe uygulamasını indirip aşağıdaki bilgilerle "
                     "kayıt olunuz:\n\nMuhasebeci Sicil No: ${adminData["adminID"]}\nMuhasebeci Eşsiz Kimlik: ${adminData["UID"]}";
 
                 Clipboard.setData(ClipboardData(text: mess));
@@ -472,6 +491,24 @@ class _AdminCompaniesPageState extends State<AdminCompaniesPage> {
             context,
             MaterialPageRoute(
               builder: (context) => AdminUpdatePage(adminID: widget.adminID),
+            ),
+          );
+        },
+        onButton5Pressed: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PremiumUpgradePage(adminID: widget.adminID),
+            ),
+          );
+        },
+        onButton6Pressed: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CompanyConfirmPage(adminID: widget.adminID),
             ),
           );
         },

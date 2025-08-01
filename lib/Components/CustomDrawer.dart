@@ -71,16 +71,18 @@ class AdminDrawer extends StatelessWidget {
   final Function() onButton2Pressed;
   final Function() onButton3Pressed;
   final Function() onButton4Pressed;
+  final Function() onButton5Pressed;
+  final Function() onButton6Pressed;
   final int page;
 
   const AdminDrawer({
     Key? key,
-    ///DEFINES FUNCTIONS TO BUTTONS' PRESSES IN ORDER
     required this.onButton1Pressed,
     required this.onButton2Pressed,
     required this.onButton3Pressed,
     required this.onButton4Pressed,
-    ///CURRENT PAGE INDEX
+    required this.onButton5Pressed,
+    required this.onButton6Pressed,
     required this.page,
   }) : super(key: key);
 
@@ -97,7 +99,7 @@ class AdminDrawer extends StatelessWidget {
               color: Color(0xFF0D1B2A),
             ),
             child: Text(
-              'Direkt Muhasebe\nMuhasebeci - Menü',
+              '4D Muhasebe\nMuhasebeci - Menü',
               style: TextStyle(
                 color: Color(0xFFEFEFEF),
                 fontSize: 24,
@@ -123,6 +125,16 @@ class AdminDrawer extends StatelessWidget {
             leading: Icon(Icons.edit, color: page == 4 ? Colors.lightBlueAccent : Colors.lightBlueAccent),
             title: Text('Bilgileri Güncelle', style: TextStyle(color: page == 4 ? Colors.lightBlueAccent : Colors.white),),
             onTap:  page != 4 ? onButton4Pressed : null,
+          ),
+          ListTile(
+            leading: Icon(Icons.star, color: page == 5 ? Colors.lightBlueAccent : Colors.amber),
+            title: Text('Premium Yükseltme', style: TextStyle(color: page == 5 ? Colors.lightBlueAccent : Colors.white),),
+            onTap: page != 5 ? onButton5Pressed : null,
+          ),
+          ListTile(
+            leading: Icon(Icons.how_to_reg, color: page == 6 ? Colors.lightBlueAccent : Colors.redAccent),
+            title: Text('Müvekkil Onayları', style: TextStyle(color: page == 6 ? Colors.lightBlueAccent : Colors.white),),
+            onTap: page != 6 ? onButton6Pressed : null,
           ),
           ],
         ),

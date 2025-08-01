@@ -1,4 +1,4 @@
-package com.westsoftpro.direct_accounting_pro
+package com.Dimension.Muhasebe
 
 import io.flutter.embedding.android.FlutterActivity
 

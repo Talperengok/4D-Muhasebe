@@ -1,11 +1,11 @@
-import 'package:direct_accounting/Components/CustomDrawer.dart';
-import 'package:direct_accounting/Pages/User/ChatPage.dart';
-import 'package:direct_accounting/Pages/User/TaxCalculator.dart';
-import 'package:direct_accounting/Pages/User/main_menu.dart';
+import '../../Components/CustomDrawer.dart';
+import 'ChatPage.dart';
+import 'TaxCalculator.dart';
+import 'main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
-import 'package:direct_accounting/widget/loading_indicator.dart';
+import '../../Services/Database/DatabaseHelper.dart';
+import '../../widget/loading_indicator.dart';
 
 ///SETTINGS PAGE FOR CLIENTS
 
@@ -122,7 +122,7 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
             _scaffoldKey.currentState!.openDrawer();
           },
 
-          icon: const Icon(Icons.menu), color: Color(0xFFEFEFEF),),
+          icon: const Icon(Icons.menu), color: const Color(0xFFEFEFEF),),
         title: const Text('Şirket Ayarları',
           style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
         backgroundColor: const Color(0xFF0D1B2A),

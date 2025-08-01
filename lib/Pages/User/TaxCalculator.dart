@@ -1,4 +1,4 @@
-import 'package:direct_accounting/Pages/User/main_menu.dart';
+import 'main_menu.dart';
 import 'package:flutter/material.dart';
 import '../../Components/CustomDrawer.dart';
 import 'ChatPage.dart';
@@ -6,6 +6,8 @@ import '../User/CompanyDetailsPage.dart';
 import '../Admin/AdminCompaniesPage.dart';
 import '../Admin/AdminUpdatePage.dart';
 import '../Admin/ArchivedCompaniesPage.dart';
+import '../Admin/PremiumUpgradePage.dart';
+import '../Admin/CompanyConfirmPage.dart';
 
 
 class TaxCalculationPage extends StatefulWidget {
@@ -113,6 +115,24 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
                   ),
                 );
               },
+              onButton5Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PremiumUpgradePage(adminID: widget.companyId),
+                  ),
+                );
+              },
+              onButton6Pressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CompanyConfirmPage(adminID: widget.companyId),
+                  ),
+                );
+              },
             )
           : ClientDrawer(
               page: 2,
@@ -169,7 +189,7 @@ class _TaxCalculationPageState extends State<TaxCalculationPage> {
           },
         ),
         backgroundColor: const Color(0xFF0D1B2A),
-        title: const Text('Vergi Hesaplayıcı', style: TextStyle(color: Color(0xFFEFEFEF)),),
+        title: const Text('Vergi Hesaplayıcı', style: TextStyle(color: Color(0xFFEFEFEF), fontWeight: FontWeight.bold),),
       ),
       backgroundColor: const Color(0xFFAAB6C8),
       body: Padding(

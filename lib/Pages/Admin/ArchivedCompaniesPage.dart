@@ -4,6 +4,8 @@ import 'AdminCompaniesPage.dart';
 import '../../Components/CustomDrawer.dart';
 import 'AdminUpdatePage.dart';
 import '../User/TaxCalculator.dart';
+import 'PremiumUpgradePage.dart';
+import 'CompanyConfirmPage.dart';
 
 class ArchivedCompaniesPage extends StatefulWidget {
   final String adminID;
@@ -39,7 +41,7 @@ class _ArchivedCompaniesPageState extends State<ArchivedCompaniesPage> {
     if (result == 'success') {
       await fetchArchivedCompanies();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Müvekkil arşivden çıkarıldı.")),
+        const SnackBar(content: Text("Müvekkil arşivden çıkarıldı.")),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -94,6 +96,24 @@ class _ArchivedCompaniesPageState extends State<ArchivedCompaniesPage> {
             ),
           );
         },
+        onButton5Pressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PremiumUpgradePage(adminID: widget.adminID),
+            ),
+          );
+        },
+        onButton6Pressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CompanyConfirmPage(adminID: widget.adminID),
+            ),
+          );
+        },
         page: 3,
       ),
       backgroundColor: const Color(0xFFAAB6C8),
@@ -132,7 +152,7 @@ class _ArchivedCompaniesPageState extends State<ArchivedCompaniesPage> {
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 6,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
@@ -147,7 +167,32 @@ class _ArchivedCompaniesPageState extends State<ArchivedCompaniesPage> {
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.restore, color: Color(0xFFEFEFEF)),
-                          onPressed: () => unarchiveCompany(company['companyID']),
+                          onPressed: () async {
+                            final shouldRestore = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Geri Al'),
+                                content: const Text('Bu müvekkili arşivden çıkarmak istediğinize emin misiniz?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('İptal'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF1E3A5F),
+                                    ),
+                                    child: const Text('Evet', style: TextStyle(color: Color(0xFFEFEFEF))),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (shouldRestore == true) {
+                              await unarchiveCompany(company['companyID']);
+                            }
+                          },
                           tooltip: "Arşivden Çıkar",
                         ),
                       ),

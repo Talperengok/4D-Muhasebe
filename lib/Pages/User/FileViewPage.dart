@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:direct_accounting/Components/FileCard.dart';
-import 'package:direct_accounting/Services/Database/DatabaseHelper.dart';
-import 'package:direct_accounting/widget/loading_indicator.dart';
+import '../../Components/FileCard.dart';
+import '../../Services/Database/DatabaseHelper.dart';
+import '../../widget/loading_indicator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -85,14 +85,14 @@ class _FileViewPageState extends State<FileViewPage> {
         backgroundColor: const Color(0xFF0D1B2A),
         leading: IconButton(onPressed: (){
           Navigator.pop(context);
-        }, icon: const Icon(Icons.arrow_back), color: Color(0xFFEFEFEF),),
+        }, icon: const Icon(Icons.arrow_back), color: const Color(0xFFEFEFEF),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: CustomScrollView(
           slivers: [
             documents.isEmpty
-                ? SliverToBoxAdapter(
+                ? const SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
                         padding: EdgeInsets.only(top: 60.0),
@@ -510,7 +510,7 @@ class _FileViewPageState extends State<FileViewPage> {
 
     if (compDetails == null || admDetails == null) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Dosya sahip bilgisi alınamadı."))
+      const SnackBar(content: Text("Dosya sahip bilgisi alınamadı."))
     );
     Navigator.pop(context); // LoadingIndicator'ı kapat
     return;
@@ -527,7 +527,7 @@ class _FileViewPageState extends State<FileViewPage> {
 
     Navigator.pop(context); // Loading'i kapat
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Dosya silindi."))
+      const SnackBar(content: Text("Dosya silindi."))
     );
 
     // Ekranı yenile
