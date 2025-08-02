@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:594254896731:android:7b483232ed5973bea5e97e",
+        "mobilesdk_app_id": "1:594254896731:android:53abdc490b7d916ba5e97e",
         "android_client_info": {
-          "package_name": "com.Dimension.Muhasebe"
+          "package_name": "com.westsoftpro.direct_accounting_pro"
         }
       },
       "oauth_client": [],
