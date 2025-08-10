@@ -496,6 +496,14 @@ class DatabaseHelper {
       List<int> fileBytes,
       String fileFieldName
       ) async {
+    // Maksimum dosya boyutu (MB)
+    const maxFileSizeMB = 20;
+
+    // Dosya boyutu kontrolü
+    double fileSizeMB = fileBytes.length / (1024 * 1024);
+    if (fileSizeMB > maxFileSizeMB) {
+      throw Exception("Dosya boyutu $maxFileSizeMB MB'dan büyük olamaz.");
+    }
     String uid = generateUID(fileName);
 
     var request = http.MultipartRequest('POST', Uri.parse(ROOT));
