@@ -1,10 +1,12 @@
 import 'dart:math';
+import 'dart:convert';
 import '../Admin/AdminCompaniesPage.dart';
 import 'main_menu.dart';
 import '../../Services/Database/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import '../Password/ForgotPasswordScreen.dart';
 
 ///LOGIN PAGE
 class LoginPage extends StatefulWidget {
@@ -28,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController companyIdController = TextEditingController();
   TextEditingController accountantIdController = TextEditingController();
+  TextEditingController pinController = TextEditingController();
 
   @override
   void initState() {
@@ -192,20 +195,18 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: () async {
                   //LOGIN IF USER EXIST FOR SELECTED USER TYPE
-
                   String authResult = await DatabaseHelper().authenticateUser(userType, idController.text, passwordController.text);
-                  if(authResult == 'success'){
+                  if (authResult == 'success') {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.setString('uid', idController.text);
-                    if(userType == "Admin") {
+                    if (userType == "Admin") {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) =>
                             AdminCompaniesPage(adminID: idController.text)
                         ),
                       );
-                    }
-                    else if(userType == "Company"){
+                    } else if (userType == "Company") {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) =>
@@ -213,23 +214,26 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       );
                     }
-                  }
-                  else if (authResult == 'pending_approval') {
+                  } else if (authResult == 'invalid') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Şifre, kullanıcı adı veya kullanıcı türü yanlış."),
+                        backgroundColor: Colors.red,
+                      )
+                    );
+                  } else if (authResult == 'pending_approval') {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Hesabınız henüz muhasebeciniz tarafından onaylanmadı."))
                     );
-                  }
-                  else {
+                  } else {
                     String message;
-
-                    if (authResult == 'pending_approval') {
-                      message = "Hesabınız henüz muhasebeciniz tarafından onaylanmadı.";
-                    } else if (authResult == 'not_confirmed') {
+                    if (authResult == 'not_confirmed') {
                       message = "Hesabınız henüz onaylanmamış.";
+                    } else if (authResult == 'account_rejected') {
+                      message = "Hesabınız muhasebeciniz tarafından reddedildi.";
                     } else {
                       message = "Giriş yapılırken bir sorun oluştu! Bilgilerinizi ve kullanıcı türünü kontrol edin.";
                     }
-
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
                   }
                 },
@@ -245,15 +249,28 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-                TextButton(
-                    onPressed: (){
-                      isLogin = false; //CHANGE PAGE TO SIGNUP PAGE
-                      setState(() {
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                  );
+                },
+                child: const Text(
+                  "Şifrenizi mi unuttunuz?",
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ),
+              TextButton(
+                  onPressed: (){
+                    isLogin = false; //CHANGE PAGE TO SIGNUP PAGE
+                    setState(() {
 
-                      });
-                    },
-                    child: const Text("Hesabınız Yok Mu? Kayıt Olun!", style: TextStyle(color: Color(0xFFEFEFEF)),)
-                )
+                    });
+                  },
+                  child: const Text("Hesabınız Yok Mu? Kayıt Olun!", style: TextStyle(color: Color(0xFFEFEFEF)),)
+              )
               ],
             ) :
             userType == "Admin" ? Column(
@@ -356,33 +373,60 @@ class _LoginPageState extends State<LoginPage> {
                   style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  obscureText: true,
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Şifre',
-                    labelStyle: const TextStyle(color: Colors.white70),
-                    filled: true,
-                    fillColor: Colors.white10,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        obscureText: true,
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Şifre',
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          filled: true,
+                          fillColor: Colors.white10,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        style: const TextStyle(color: Color(0xFFEFEFEF)),
+                      ),
                     ),
-                  ),
-                  style: const TextStyle(color: Color(0xFFEFEFEF)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        obscureText: true,
+                        controller: passwordAgainController,
+                        decoration: InputDecoration(
+                          labelText: 'Şifre Tekrar',
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          filled: true,
+                          fillColor: Colors.white10,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        style: const TextStyle(color: Color(0xFFEFEFEF)),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   obscureText: true,
-                  controller: passwordAgainController,
+                  controller: pinController,
                   decoration: InputDecoration(
-                    labelText: 'Şifre Tekrar',
+                    labelText: '4 Hane PIN (şifre sıfırlamak için)',
                     labelStyle: const TextStyle(color: Colors.white70),
                     filled: true,
                     fillColor: Colors.white10,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
+                    counterText: "",
                   ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 4,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 24),
@@ -403,6 +447,13 @@ class _LoginPageState extends State<LoginPage> {
                       return;
                     }
 
+                    if (pinController.text.length != 4) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("PIN 4 haneli olmalı!"))
+                      );
+                      return;
+                    }
+
                     await DatabaseHelper().createAdmin(
                       idController.text,
                       nameController.text,
@@ -410,7 +461,8 @@ class _LoginPageState extends State<LoginPage> {
                       DateTime.now().add(const Duration(days: 365)).toString(),
                       passwordController.text,
                       "",
-                      ""
+                      "",
+                      pinController.text // added PIN parameter
                     );
 
                     Navigator.pushReplacement(
@@ -569,33 +621,60 @@ class _LoginPageState extends State<LoginPage> {
                   style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  obscureText: true,
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Şifre',
-                    labelStyle: const TextStyle(color: Colors.white70),
-                    filled: true,
-                    fillColor: Colors.white10,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        obscureText: true,
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Şifre',
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          filled: true,
+                          fillColor: Colors.white10,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        style: const TextStyle(color: Color(0xFFEFEFEF)),
+                      ),
                     ),
-                  ),
-                  style: const TextStyle(color: Color(0xFFEFEFEF)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        obscureText: true,
+                        controller: passwordAgainController,
+                        decoration: InputDecoration(
+                          labelText: 'Şifre Tekrar',
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          filled: true,
+                          fillColor: Colors.white10,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        style: const TextStyle(color: Color(0xFFEFEFEF)),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   obscureText: true,
-                  controller: passwordAgainController,
+                  controller: pinController,
                   decoration: InputDecoration(
-                    labelText: 'Şifre Tekrar',
+                    labelText: '4 Hane PIN (şifre sıfırlamak için)',
                     labelStyle: const TextStyle(color: Colors.white70),
                     filled: true,
                     fillColor: Colors.white10,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
+                    counterText: "",
                   ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 4,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   style: const TextStyle(color: Color(0xFFEFEFEF)),
                 ),
                 const SizedBox(height: 24),
@@ -604,6 +683,13 @@ class _LoginPageState extends State<LoginPage> {
                     if (passwordAgainController.text != passwordController.text) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Şifreler uyuşmuyor!"))
+                      );
+                      return;
+                    }
+
+                    if (pinController.text.length != 4) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("PIN 4 haneli olmalı!"))
                       );
                       return;
                     }
@@ -623,43 +709,40 @@ class _LoginPageState extends State<LoginPage> {
                       return;
                     }
 
+                    var existing = await DatabaseHelper().getCompanyDetails(companyIdController.text);
+                    if (existing != null && existing.isNotEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Bu kullanıcı adı zaten kayıtlı!"))
+                      );
+                      return;
+                    }
                     // Şartlar sağlandı, şirket hesabı oluştur
-                    String result = await DatabaseHelper().createCompany(
+                    var resRaw = await DatabaseHelper().createCompany(
                       companyIdController.text,
                       nameController.text,
                       idController.text,
                       "",
                       passwordController.text,
-                      ""
+                      "",
+                      pinController.text // added PIN parameter
                     );
+                    Map<String, dynamic> res = jsonDecode(resRaw);
 
-                    if (result == 'limit_reached') {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("Sınır Aşıldı"),
-                          content: const Text("Muhasebeciniz en fazla 10 müvekkil ekleyebilir. Daha fazlası için premium üyelik gereklidir."),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text("Tamam"),
-                            ),
-                          ],
-                        ),
-                      );
-                      return;
+                    String status = res['status'] ?? '';
+                    var confirmed = res.containsKey('confirmed') ? res['confirmed'] : null;
+
+                    String message;
+                    if (status == 'success' && confirmed == 'YES') {
+                      message = "Hesabınız onaylandı ve giriş yapabilirsiniz.";
+                    } else if (status == 'success' && confirmed == null) {
+                      message = "Hesabınız onay için muhasebecinize iletildi.Hesabınız onaylandığında giriş yapabilirsiniz.";
+                    } else if (status == 'success' && confirmed == 'NO') {
+                      message = "Hesabınız muhasebeciniz tarafından reddedildi.";
+                    } else {
+                      message = "Hesap oluşturulurken bir sorun oluştu.";
                     }
 
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MainMenu(
-                          currentUserId: companyIdController.text,
-                          isAdmin: false,
-                          companyID: companyIdController.text,
-                        ),
-                      ),
-                    );
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0D1B2A),

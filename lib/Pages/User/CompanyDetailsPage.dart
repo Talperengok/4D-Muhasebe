@@ -24,7 +24,6 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
   final TextEditingController _newPasswordController = TextEditingController();
   Map<String, dynamic> companyDetails = {}; //CURRENT COMPANY DETAILS
   bool _isLoading = true;
-  bool _isPasswordChanging = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -38,7 +37,7 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
     setState(() {
       _isLoading = true;
     });
-    companyDetails = (await DatabaseHelper().getCompanyDetails(widget.companyID))!;
+    companyDetails = (await DatabaseHelper().getCompanyDetails(widget.companyID.toString()))!;
     _nameController.text = companyDetails['companyName'] ?? '';
     setState(() {
       _isLoading = false;
@@ -47,68 +46,59 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
 
   //SAVES THE
   Future<void> _saveChanges() async {
-    LoadingIndicator(context).showLoading();
-    String result = await DatabaseHelper().updateCompanyDetails(
-      widget.companyID,
-      _nameController.text.trim(),
-      companyDetails["companyPassword"],
-    );
-    Navigator.pop(context);
+    String newName = _nameController.text.trim();
+    String oldPassword = _oldPasswordController.text.trim();
+    String newPassword = _newPasswordController.text.trim();
 
-    if (result == 'success') {
+    if (newPassword.isNotEmpty && oldPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Şirket bilgileri başarıyla güncellendi.')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bilgiler güncellenirken bir hata oluştu.')),
-      );
-    }
-  }
-
-  //CHANGE CLIENT PASSWORD
-  Future<void> _changePassword() async {
-    if (_oldPasswordController.text.isEmpty || _newPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanları doldurun.')),
+        const SnackBar(content: Text('Yeni şifre için eski şifre gereklidir.')),
       );
       return;
     }
 
     LoadingIndicator(context).showLoading();
-    var authResult = await DatabaseHelper().authenticateUser(
-      'Company',
-      widget.companyID,
-      _oldPasswordController.text.trim(),
-    );
-
-    Navigator.pop(context);
-
-    if (authResult == true) {
-      LoadingIndicator(context).showLoading();
-      String result = await DatabaseHelper().updateCompanyDetails(
-        widget.companyID,
-        _nameController.text.trim(),
-        _newPasswordController.text.trim(),
-      );
-      Navigator.pop(context);
-
-      if (result.contains('success')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Şifre başarıyla güncellendi.')),
+    String result = 'error';
+    try {
+      if (newPassword.isEmpty) {
+        // Sadece isim güncelleniyorsa
+        result = await DatabaseHelper().updateCompanyName(widget.companyID, newName);
+      } else {
+        // Eski şifre doğruysa önce şifreyi güncelle, sonra ismi güncelle
+        var authResult = await DatabaseHelper().authenticateUser(
+          'Company',
+          widget.companyID,
+          oldPassword,
         );
-        setState(() {
-          _isPasswordChanging = false;
-        });
+        if (authResult == 'success') {
+          // Eski şifre doğru, önce şifreyi güncelle
+          var passResult = await DatabaseHelper().updateCompanyPassword(widget.companyID, newPassword);
+          if (passResult == 'success') {
+            // Sonra şirket adını güncelle
+            result = await DatabaseHelper().updateCompanyName(widget.companyID, newName);
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Eski şifre yanlış.')),
+          );
+          return;
+        }
+      }
+
+      if (result == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Şirket bilgileri başarıyla güncellendi.')),
+        );
+        _oldPasswordController.clear();
+        _newPasswordController.clear();
+        await _fetchCompanyDetails();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Şifre güncellenirken bir hata oluştu.')),
+          const SnackBar(content: Text('Bilgiler güncellenirken bir hata oluştu.')),
         );
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Eski şifre yanlış.')),
-      );
+    } finally {
+      Navigator.pop(context);
     }
   }
 
@@ -204,53 +194,25 @@ class _CompanyUpdatePageState extends State<CompanyUpdatePage> {
               },
             ),
             const SizedBox(height: 16),
-            if (_isPasswordChanging) ...[
-              TextField(
-                controller: _oldPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Eski Şifre',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock, color: Color(0xFF3D5A80)),
-                ),
+            TextField(
+              controller: _oldPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Eski Şifre (Yeni şifre için zorunlu)',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock, color: Color(0xFF3D5A80)),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _newPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Yeni Şifre',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock_open, color: Color(0xFF3D5A80)),
-                ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _newPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Yeni Şifre (İsteğe bağlı)',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock_open, color: Color(0xFF3D5A80)),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _changePassword,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E3A5F),
-                ),
-                child: const Text(
-                  'Şifreyi Güncelle',
-                  style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
-                ),
-              ),
-            ] else ...[
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _isPasswordChanging = true;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E3A5F),
-                ),
-                child: const Text(
-                  'Şifreyi Değiştir',
-                  style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
-                ),
-              ),
-            ],
+            ),
             const Spacer(),
             SizedBox(
               width: double.infinity,

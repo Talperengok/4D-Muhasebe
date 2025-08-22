@@ -125,7 +125,7 @@ class FileCard extends StatelessWidget {
                         onPressed: () => showInfo(),
                         child: Icon(Icons.info, color: iconColor),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 5),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
@@ -133,7 +133,7 @@ class FileCard extends StatelessWidget {
                         onPressed: () => downloadFile(),
                         child: Icon(Icons.download, color: iconColor),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 5),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
@@ -142,7 +142,7 @@ class FileCard extends StatelessWidget {
                         child: Icon(Icons.share, color: iconColor),
                       ),
                       if (deleteFile != null) ...[
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 5),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonColor,

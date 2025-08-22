@@ -29,9 +29,9 @@ class _ArchivedCompaniesPageState extends State<ArchivedCompaniesPage> {
   }
 
   Future<void> fetchArchivedCompanies() async {
-    final companies = await db.getArchivedCompanies();
+    final companies = await db.getArchivedCompanies(widget.adminID);
     setState(() {
-      archivedCompanies = companies;
+      archivedCompanies = companies.where((c) => c['companyAdmin'] == widget.adminID).toList();
       isLoading = false;
     });
   }

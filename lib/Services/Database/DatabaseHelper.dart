@@ -53,6 +53,7 @@ class DatabaseHelper {
     String adminPassword,
     String adminFiles,
     String adminMessages,
+    String pin, // added PIN parameter
   ) async {
     String uid = generateUID(adminName);
     var map = <String, dynamic>{
@@ -65,6 +66,7 @@ class DatabaseHelper {
       'adminPassword': adminPassword,
       'adminFiles': adminFiles,
       'adminMessages': adminMessages,
+      'pin': pin, // send PIN to backend
       'isPremium': '0',
       'premium_type': 'standard',
       'premium_days': '0',
@@ -169,8 +171,11 @@ class DatabaseHelper {
   }
 
   //GET Archived Companies
-  Future<List<Map<String, dynamic>>> getArchivedCompanies() async {
-    var map = {'action': 'GET_ARCHIVED_COMPANIES'};
+  Future<List<Map<String, dynamic>>> getArchivedCompanies(String adminID) async {
+    var map = {
+      'action': 'GET_ARCHIVED_COMPANIES',
+      'adminID': adminID,
+    };
     var response = await http.post(Uri.parse(ROOT), body: map);
     print("Response status: ${response.statusCode}");
     print("Response body: ${response.body}");
@@ -304,6 +309,27 @@ class DatabaseHelper {
     }
   }
 
+  //UPDATE ACCOUNTANT NAME
+  Future<String> updateAdminName(String adminID, String newName) async {
+    var map = <String, dynamic>{
+      'action': 'UPDATE_ADMIN_DETAILS',
+      'adminID': adminID,
+      'adminName': newName,
+      'adminPassword': '', // şifreyi değiştirmiyoruz
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      if (data is Map<String, dynamic> && data.containsKey('status')) {
+        return data['status'] == 'success' ? 'success' : 'error';
+      } else {
+        return 'error';
+      }
+    } else {
+      return 'error';
+    }
+  }
+
   // Upgrade Admin to Premium
   Future<String> upgradeAdminToPremium(String adminID) async {
     var map = <String, dynamic>{
@@ -336,10 +362,23 @@ class DatabaseHelper {
 
   //------------------ COMPANIES ------------------//
   //CREATE CLIENT ACCOUNT
-  Future<String> createCompany(String uid, String companyName, String companyAdmin, String companyMessage, String companyPassword, String companyFiles) async {
+  Future<String> createCompany(
+    String uid,
+    String companyName,
+    String companyAdmin,
+    String companyMessage,
+    String companyPassword,
+    String companyFiles,
+    String pin, // added PIN parameter
+  ) async {
     // Get all companies (active + archived)
     List<Map<String, dynamic>> allCompanies = await getCompanies();
-    int adminCompanyCount = allCompanies.where((c) => c['companyAdmin'] == companyAdmin).length;
+
+    // Sadece confirmed = YES olanları say
+    int adminCompanyCount = allCompanies.where((c) =>
+        c['companyAdmin'] == companyAdmin &&
+        c['confirmed'] == 'YES'
+    ).length;
 
     // TEMP: replace with real check from admin record later
     final adminDetails = await getAdminDetails(companyAdmin);
@@ -357,7 +396,8 @@ class DatabaseHelper {
       'companyMessage': companyMessage,
       'companyPassword': companyPassword,
       'companyFiles': companyFiles,
-      'confirmed': 'NO',
+      'pin': pin, // send PIN to backend
+      'confirmed': '',
     };
     var response = await http.post(Uri.parse(ROOT), body: map);
     return response.statusCode == 200 ? response.body : 'error';
@@ -373,6 +413,27 @@ class DatabaseHelper {
     };
     var response = await http.post(Uri.parse(ROOT), body: map);
     return response.statusCode == 200 ? response.body : 'error';
+  }
+
+  // UPDATE COMPANY NAME ONLY (like updateAdminName)
+  Future<String> updateCompanyName(String companyID, String newName) async {
+    var map = <String, dynamic>{
+      'action': 'UPDATE_COMPANY_DETAILS',
+      'companyID': companyID,
+      'companyName': newName,
+      'companyPassword': '', // do not modify password
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      if (data is Map<String, dynamic> && data.containsKey('status')) {
+        return data['status'] == 'success' ? 'success' : 'error';
+      } else {
+        return 'error';
+      }
+    } else {
+      return 'error';
+    }
   }
 
   //UPDATE CLIENT'S ADMIN
@@ -691,7 +752,6 @@ class DatabaseHelper {
       'id': id,
       'password': password,
     };
-
     var response = await http.post(Uri.parse(ROOT), body: map);
     print("AuthenticateUser Response: ${response.body}");
 
@@ -699,19 +759,46 @@ class DatabaseHelper {
       var data = jsonDecode(response.body);
       print("Parsed Data: $data");
 
-      if (data is Map && data.containsKey('status')) {
-        if (data['status'] == 'true') {
-          if (type == 'Company' && data['confirmed'] != 'YES') {
-            return 'pending_approval';
-          }
-          return 'success';
-        } else {
-          if (data.containsKey('message') &&
-              data['message'].toString().toLowerCase().contains('not confirmed')) {
-            return 'not_confirmed';
-          }
+      if (data is Map<String, dynamic>) {
+        // Handle incorrect password
+        if (data.containsKey('message') && data['message'] == 'Incorrect password.') {
           return 'invalid';
         }
+        // Handle user not found
+        if (data.containsKey('message') && data['message'] == 'User not found.') {
+          return 'invalid';
+        }
+        // Handle invalid user type
+        if (data.containsKey('error') && data['message'] == 'invalid_user_type') {
+          return 'invalid_user_type';
+        }
+        // Handle success
+        if (data.containsKey('status') && data['status'] == 'true') {
+          // For company, check confirmation status
+          if (type == 'Company') {
+            if (!data.containsKey('confirmed') || data['confirmed'] == null) {
+              return 'pending_approval';
+            } else if (data['confirmed'] == 'NO') {
+              return 'account_rejected';
+            } else if (data['confirmed'] == 'YES') {
+              return 'success';
+            } else {
+              return 'pending_approval';
+            }
+          }
+          // For admin or other types
+          return 'success';
+        }
+        // If user found but not confirmed (company)
+        if (type == 'Company') {
+          if (!data.containsKey('confirmed') || data['confirmed'] == null) {
+            return 'pending_approval';
+          } else if (data['confirmed'] == 'NO') {
+            return 'account_rejected';
+          }
+        }
+        // Default to invalid
+        return 'invalid';
       }
     }
     return 'error';
@@ -748,5 +835,75 @@ class DatabaseHelper {
       }
     }
     return 'error';
+  }
+
+  // UPDATE COMPANY PASSWORD
+  Future<String> updateCompanyPassword(String companyID, String newPassword) async {
+    var map = <String, dynamic>{
+      'action': 'UPDATE_COMPANY_PASSWORD',
+      'companyID': companyID,
+      'newPassword': newPassword,
+    };
+
+    try {
+      var response = await http.post(Uri.parse(ROOT), body: map);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data is Map<String, dynamic> && data.containsKey('status')) {
+          return data['status'] == 'success' ? 'success' : 'error';
+        } else {
+          return 'error';
+        }
+      } else {
+        return 'error';
+      }
+    } catch (e) {
+      print('Error updating company password: $e');
+      return 'error';
+    }
+  }
+
+  // Set or update a user's PIN
+  Future<String> setUserPin(String type, String userId, String pin) async {
+    var map = <String, dynamic>{
+      'action': 'SET_USER_PIN',
+      'type': type, // "Admin" veya "Company"
+      'userID': userId,
+      'pin': pin,
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      try {
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic> && data.containsKey('status')) {
+          return data['status']; // 'success' veya 'error'
+        }
+      } catch (e) {
+        print("JSON parse error in setUserPin: $e");
+      }
+    }
+    return 'error';
+  }
+
+  // Verify a user's PIN
+  Future<bool> verifyUserPin(String type, String userId, String enteredPin) async {
+    var map = <String, dynamic>{
+      'action': 'VERIFY_USER_PIN',
+      'type': type, // "Admin" veya "Company"
+      'userID': userId,
+      'enteredPin': enteredPin,
+    };
+    var response = await http.post(Uri.parse(ROOT), body: map);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      try {
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic> && data.containsKey('status')) {
+          return data['status'] == 'success';
+        }
+      } catch (e) {
+        print("JSON parse error in verifyUserPin: $e");
+      }
+    }
+    return false;
   }
 }

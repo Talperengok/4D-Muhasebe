@@ -40,7 +40,9 @@ class _CompanyConfirmPageState extends State<CompanyConfirmPage> {
 
   Future<void> confirmCompany(String companyID) async {
     final allCompanies = await DatabaseHelper().getCompanies();
-    final currentCount = allCompanies.where((c) => c['companyAdmin'] == widget.adminID).length;
+    final currentCount = allCompanies
+        .where((c) => c['companyAdmin'] == widget.adminID && c['confirmed'] == 'YES')
+        .length;
 
     final adminDetails = await DatabaseHelper().getAdminDetails(widget.adminID);
     final String premiumType = adminDetails?['premium_type'] ?? '';

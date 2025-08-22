@@ -26,7 +26,6 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
   final TextEditingController _newPasswordController = TextEditingController();
   Map<String, dynamic> adminDetails = {}; // CURRENT ADMIN DETAILS
   bool _isLoading = true;
-  bool _isPasswordChanging = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -49,67 +48,34 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
 
   // SAVES THE CHANGES
   Future<void> _saveChanges() async {
+    String adminName = _nameController.text.trim();
+    String newPassword = _newPasswordController.text.trim();
+
     LoadingIndicator(context).showLoading();
-    String result = await DatabaseHelper().updateAdminDetails(
-      widget.adminID,
-      _nameController.text.trim(),
-      adminDetails["adminPassword"],
-    );
+
+    String result = 'error';
+
+    if (newPassword.isEmpty) {
+      // Only update name
+      result = await DatabaseHelper().updateAdminName(widget.adminID, adminName);
+    } else {
+      // Update password first
+      var passResult = await DatabaseHelper().updateAdminPassword(widget.adminID, newPassword);
+      if (passResult == 'success') {
+        // Then update name
+        result = await DatabaseHelper().updateAdminName(widget.adminID, adminName);
+      }
+    }
+
     Navigator.pop(context);
 
     if (result == 'success') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Admin bilgileri başarıyla güncellendi.')),
+        const SnackBar(content: Text('Güncelleme başarılı')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bilgiler güncellenirken bir hata oluştu.')),
-      );
-    }
-  }
-
-  // CHANGE ADMIN PASSWORD
-  Future<void> _changePassword() async {
-    if (_oldPasswordController.text.isEmpty || _newPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanları doldurun.')),
-      );
-      return;
-    }
-
-    LoadingIndicator(context).showLoading();
-    var authResult = await DatabaseHelper().authenticateUser(
-      'Admin',
-      widget.adminID,
-      _oldPasswordController.text.trim(),
-    );
-
-    Navigator.pop(context);
-
-    if (authResult == true) {
-      LoadingIndicator(context).showLoading();
-      String result = await DatabaseHelper().updateAdminDetails(
-        widget.adminID,
-        _nameController.text.trim(),
-        _newPasswordController.text.trim(),
-      );
-      Navigator.pop(context);
-
-      if (result.contains('success')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Şifre başarıyla güncellendi.')),
-        );
-        setState(() {
-          _isPasswordChanging = false;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Şifre güncellenirken bir hata oluştu.')),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Eski şifre yanlış.')),
+        const SnackBar(content: Text('Güncelleme sırasında hata oluştu')),
       );
     }
   }
@@ -191,7 +157,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                   TextField(
                     controller: _nameController,
                     decoration: const InputDecoration(
-                      labelText: 'Admin Adı',
+                      labelText: 'Muhasebeci Adı',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.admin_panel_settings, color: Color(0xFF1E3A5F)),
                     ),
@@ -201,7 +167,7 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                     controller: TextEditingController(text: widget.adminID),
                     readOnly: true,
                     decoration: const InputDecoration(
-                      labelText: 'Admin ID',
+                      labelText: 'Muhasebeci ID',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.copy, color: Color(0xFF1E3A5F)),
                     ),
@@ -213,53 +179,25 @@ class _AdminUpdatePageState extends State<AdminUpdatePage> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  if (_isPasswordChanging) ...[
-                    TextField(
-                      controller: _oldPasswordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Eski Şifre',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock, color: Color(0xFF1E3A5F)),
-                      ),
+                  TextField(
+                    controller: _oldPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Eski Şifre',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock, color: Color(0xFF1E3A5F)),
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _newPasswordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Yeni Şifre',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock_open, color: Color(0xFF1E3A5F)),
-                      ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _newPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Yeni Şifre',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock_open, color: Color(0xFF1E3A5F)),
                     ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _changePassword,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E3A5F),
-                      ),
-                      child: const Text(
-                        'Şifreyi Güncelle',
-                        style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
-                      ),
-                    ),
-                  ] else ...[
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordChanging = true;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E3A5F),
-                      ),
-                      child: const Text(
-                        'Şifreyi Değiştir',
-                        style: TextStyle(fontSize: 16, color: Color(0xFFEFEFEF)),
-                      ),
-                    ),
-                  ],
+                  ),
                   const Spacer(),
                   SizedBox(
                     width: double.infinity,
