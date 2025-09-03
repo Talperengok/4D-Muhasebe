@@ -454,6 +454,15 @@ class _LoginPageState extends State<LoginPage> {
                       return;
                     }
 
+                    // Duplicate Sicil No check
+                    var adminExisting = await DatabaseHelper().getAdminDetails(idController.text);
+                    if (adminExisting != null && adminExisting.isNotEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Bu sicil numarasıyla bir muhasebeci zaten kayıtlı!"))
+                      );
+                      return;
+                    }
+
                     await DatabaseHelper().createAdmin(
                       idController.text,
                       nameController.text,

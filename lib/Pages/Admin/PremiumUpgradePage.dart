@@ -23,8 +23,6 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
   String? _error;
   Map<String, String>? _selectedPackage;
   String _selectedDuration = "30";
-
-  // Save premium type locally
   String _premiumType = 'standard';
 
   final InAppPurchase _iap = InAppPurchase.instance;
@@ -55,10 +53,10 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
     }
 
     const Set<String> _kIds = {
-      'premium_30_limited',
-      'premium_30_unlimited',
-      'premium_365_limited',
-      'premium_365_unlimited',
+      '30_gunluk_gelismis_paket',
+      '30_gunluk_super_gelismis_paket',
+      '365_gunluk_gelismis_paket',
+      '365_gunluk_super_gelismis_paket',
     };
 
     final ProductDetailsResponse response = await _iap.queryProductDetails(_kIds);
@@ -71,6 +69,7 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
 
     setState(() {
       _products = response.productDetails;
+      print("Mağaza ürünleri: ${_products.map((e) => e.id).toList()}");
     });
   }
 
@@ -90,11 +89,12 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
       onTap: () {
         setState(() {
           _selectedPackage = value;
+          print("Seçilen paket: $_selectedPackage");
         });
       },
       child: Center(
         child: Container(
-          width: 500, // fixed wider width
+          width: 500,
           margin: const EdgeInsets.symmetric(vertical: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -141,9 +141,9 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
               ),
               const SizedBox(height: 6),
               ...features.map((f) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text("• $f", style: const TextStyle(fontSize: 15)),
-              )),
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text("• $f", style: const TextStyle(fontSize: 15)),
+                  )),
             ],
           ),
         ),
@@ -152,23 +152,59 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
   }
 
   void _upgrade() async {
-    if (_selectedPackage == null || !_storeAvailable) return;
+    if (_selectedPackage == null || !_storeAvailable) {
+      print("Paket seçilmedi veya mağaza kullanılamıyor.");
+      return;
+    }
 
-    String productId = "premium_${_selectedPackage!['value']}";
+    String productId = "";
+    switch (_selectedPackage!['value']) {
+      case "30_limited":
+        productId = "30_gunluk_gelismis_paket";
+        break;
+      case "30_unlimited":
+        productId = "30_gunluk_super_gelismis_paket";
+        break;
+      case "365_limited":
+        productId = "365_gunluk_gelismis_paket";
+        break;
+      case "365_unlimited":
+        productId = "365_gunluk_super_gelismis_paket";
+        break;
+      default:
+        print("Bilinmeyen paket seçimi: ${_selectedPackage!['value']}");
+        return;
+    }
+
+    print("Seçilen productId: $productId");
+
+    if (_products.isEmpty) {
+      print("Ürünler boş, mağazadan çekilemiyor.");
+      return;
+    }
 
     final product = _products.firstWhere(
       (p) => p.id == productId,
       orElse: () {
+        print("Ürün bulunamadı: $productId");
         setState(() {
           _error = "Ürün bulunamadı.";
         });
-        return ProductDetails(id: '', title: '', description: '', price: '', rawPrice: 0, currencyCode: '');
+        return ProductDetails(
+          id: '',
+          title: '',
+          description: '',
+          price: '',
+          rawPrice: 0,
+          currencyCode: '',
+        );
       },
     );
 
     if (product.id == '') return;
 
     final purchaseParam = PurchaseParam(productDetails: product);
+    print("Satın alma başlatılıyor: ${product.id}");
     _iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
@@ -190,7 +226,7 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
     if (response == 'success') {
       setState(() {
         _isLoading = false;
-        _premiumType = type; // save premium info to local state
+        _premiumType = type;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Premium üyeliğiniz aktif edildi.")),
@@ -205,7 +241,7 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
   }
 
   int getClientLimit() {
-    if (_premiumType == 'unlimited') return 999999; // effectively infinite
+    if (_premiumType == 'unlimited') return 999999;
     if (_premiumType == 'limited') return 100;
     return 10;
   }

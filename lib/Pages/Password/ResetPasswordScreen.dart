@@ -24,7 +24,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (widget.type == "Admin") {
       result = await db.updateAdminPassword(widget.userId, _passwordController.text.trim());
     } else {
-      result = await db.updateCompanyDetails(widget.userId, "dummyName", _passwordController.text.trim());
+      result = await db.updateCompanyPassword(widget.userId, _passwordController.text.trim());
     }
 
     setState(() => _loading = false);
