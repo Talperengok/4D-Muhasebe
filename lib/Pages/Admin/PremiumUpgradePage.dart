@@ -69,8 +69,21 @@ class _PremiumUpgradePageState extends State<PremiumUpgradePage> {
 
     setState(() {
       _products = response.productDetails;
-      print("Mağaza ürünleri: ${_products.map((e) => e.id).toList()}");
     });
+
+    if (_products.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Ürün listesi boş, mağaza ürünlerini kontrol edin."),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Mağaza ürünleri yüklendi: ${_products.map((e) => e.id).join(', ')}"),
+        ),
+      );
+    }
   }
 
   void _onPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
